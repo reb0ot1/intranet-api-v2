@@ -1,0 +1,14 @@
+#AddHandler application/x-httpd-php70 .php .php5 .php4 .php3
+
+#<IfModule mod_fcgid.c>
+#AddHandler fcgid-script .php
+#FcgidWrapper /home/q1q1eu2x/public_html/employees/php.fcgi .php
+#</IfModule>
+
+RewriteEngine on
+#RewriteCond %{REQUEST_URI}% !^/webroot/.*$
+RewriteCond %{REQUEST_URI}% !^/employees/webroot/.*$
+RewriteRule ^ index.php
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+SetEnv ENVIRONMENT Production
