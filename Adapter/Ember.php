@@ -22,7 +22,9 @@ class Ember
                                 "files" =>
                                     array("GET"=>"list", "POST" => "", "PUT" => "", "DELETE"=>"", "OPTIONS" => "option"),
                                 "feedbacks" =>
-                                    array("GET"=>"testGet", "POST" => "sendfeedback", "PUT" => "", "DELETE"=>"", "OPTIONS" => "option")
+                                    array("GET"=>"testGet", "POST" => "sendfeedback", "PUT" => "", "DELETE"=>"", "OPTIONS" => "option"),
+                                "settings" =>
+                                    array("GET"=>"viewData", "POST" => "", "PUT" => "", "DELETE"=>"", "OPTIONS" => "option")
                                 ];
 
     private $theController;

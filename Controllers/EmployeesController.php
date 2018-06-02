@@ -105,7 +105,7 @@ class EmployeesController
                 if ($this->employeeService->addEmp($employeeBindingModel, $md5string)) {
                     $empArrray = $this->employeeService->getEmpByStrId($md5string);
 
-                    $updateEmpId = $this->employeeService->updateAddInfoId($md5string, $empArrray["id"]);
+//                    $updateEmpId = $this->employeeService->updateAddInfoId($md5string, $empArrray["id"]);
                     $empArrray["image"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$empArrray['image'];
                     $empArrray["avatar"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$empArrray['avatar'];
                     $empArrray["photo"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$empArrray['photo'];

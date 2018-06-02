@@ -170,4 +170,9 @@ $app->registerDependency(\Employees\Services\BenefitsServiceInterface::class,
     \Employees\Services\BenefitsService::class
     );
 
+$app->registerDependency(\Employees\Services\SettingsDataServiceInterface::class,
+    \Employees\Services\SettingsDataService::class
+);
+
+
 $app->start();
