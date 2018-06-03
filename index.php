@@ -35,14 +35,11 @@ ini_set("include_path", '/home/q1q1eu2x/php:' . ini_get("include_path") );
 //var_dump(json_decode(file_get_contents("php://input"),true));
 //exit;
 
-
 $uri = $_SERVER['REQUEST_URI']; // URI
 $requestMethod = $_SERVER["REQUEST_METHOD"]; //requested method
 $self = $_SERVER['PHP_SELF'];
 
 $arguments = [];
-
-
 
 $self = str_replace("index.php","",$self);
 
@@ -67,7 +64,6 @@ $actionName = $theMethod->getMethod();
 $dbInstanceName = 'default';
 $headers = [];
 $keyHolds = "";
-
 
 if ($requestMethod != "OPTIONS") {
 

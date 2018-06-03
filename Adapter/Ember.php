@@ -37,21 +37,16 @@ class Ember
     {
         $this->theController = $controller;
         $this->theMethod = $method;
+        $this->addDataToPOSTIfEmpty();
+    }
 
-//        if ($this->theController == "admin") {
-//            $this->theController = "admin";
-//            $this->theMethod = "token";
-//        }
-//        else if (count($_POST) > 0) {
-//        if (count($_POST) > 0) {
-//
-//        } else {
-            if (count($_POST) === 0) {
-//            parse_str(file_get_contents("php://input"), $this->phpInput);
-            if ($this->theMethod === "PUT" || $this->theMethod === "POST") {
-                        $this->phpInput = json_decode(file_get_contents("php://input"), true);
+    private function addDataToPOSTIfEmpty()
+    {
+        $json = json_decode(file_get_contents("php://input"), true);
+        if ($json) {
 
-//                $_POST = $this->phpInput['employee'];
+                $this->phpInput = $json;
+
                 if ($this->theController == "employees") {
                     $_POST = $this->phpInput["employee"];
                 } else if ($this->getController() == "feedbacks") {
@@ -60,25 +55,19 @@ class Ember
                     $_POST = $this->phpInput[$this->theController];
                 }
 
-
-            }
         }
-
     }
 
     public function getController() {
-        //employees/token
+
         return $this->theController;
 
     }
 
     public function getMethod() {
 
-//        if ($this->theMethod == "token") {
-//            return "token";
-//        } else {
-//            return self::$methods[$this->theController][$this->theMethod];
-//        }
         return self::$methods[$this->theController][$this->theMethod];
     }
+
+
 }
