@@ -11,62 +11,32 @@ namespace Employees\Adapter;
 
 class Ember
 {
-    private static $methods = ["admin" =>
-                                    array("GET"=>"", "POST"=>"token","PUT"=>"", "DELETE"=>"", "OPTIONS" => "option"),
-                               "employees" =>
-                                    array("GET"=>"list", "POST"=>"addemployee","PUT"=>"updateemployee", "DELETE"=>"removeemployee", "OPTIONS" => "option"),
-                               "news" =>
-                                    array("GET"=>"getNews", "POST" => "addnews", "PUT" => "updatenews", "DELETE"=>"deletenews", "OPTIONS" => "option"),
-                                "benefits" =>
-                                    array("GET"=>"list", "POST" => "", "PUT" => "", "DELETE"=>"", "OPTIONS" => "option"),
-                                "files" =>
-                                    array("GET"=>"list", "POST" => "", "PUT" => "", "DELETE"=>"", "OPTIONS" => "option"),
-                                "feedbacks" =>
-                                    array("GET"=>"testGet", "POST" => "sendfeedback", "PUT" => "", "DELETE"=>"", "OPTIONS" => "option"),
-                                "settings" =>
-                                    array("GET"=>"viewData", "POST" => "", "PUT" => "", "DELETE"=>"", "OPTIONS" => "option")
-                                ];
+    private  $routes;
 
-    private $theController;
+    private $controller;
 
-    private $theMethod;
 
-    private $phpInput = array();
-
-    public function __construct($controller, $method)
+    public function __construct($controller, $roots)
     {
-        $this->theController = $controller;
-        $this->theMethod = $method;
-        $this->addDataToPOSTIfEmpty();
+        $this->controller = $controller;
+        $this->routes = $roots;
     }
 
-    private function addDataToPOSTIfEmpty()
+
+    public function getController()
     {
-        $json = json_decode(file_get_contents("php://input"), true);
-        if ($json) {
 
-                $this->phpInput = $json;
+        return $this->controller;
 
-                if ($this->theController == "employees") {
-                    $_POST = $this->phpInput["employee"];
-                } else if ($this->getController() == "feedbacks") {
-                    $_POST = $this->phpInput["feedback"];
-                } else {
-                    $_POST = $this->phpInput[$this->theController];
-                }
+    }
 
+    public function getMethod()
+    {
+        if (array_key_exists($this->controller, $this->routes)) {
+            return $this->routes[$this->controller];
         }
-    }
 
-    public function getController() {
-
-        return $this->theController;
-
-    }
-
-    public function getMethod() {
-
-        return self::$methods[$this->theController][$this->theMethod];
+        return null;
     }
 
 

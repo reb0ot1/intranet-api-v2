@@ -34,11 +34,6 @@ class EmployeesController
         $this->dataReturn = $dataReturn;
     }
 
-    public function option()
-    {
-
-    }
-
     public function list($active = null)
     {
 

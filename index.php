@@ -9,12 +9,9 @@ use Employees\Core\MVC\KeyHolder;
 
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE');
-//header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description, Origin');
 header('Access-Control-Allow-Headers: Content-Type, Origin, Authorization');
-//header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description, Origin, X-Auth-Token, authorization');
-//header('X-Auth-Token: test1123');
-//header('Content-Type: text/html; charset=utf-8');
 header('Content-Type: application/json; charset=utf-8');
+
 
 spl_autoload_register(function($class){
     $class = str_replace("Employees\\","", $class);
@@ -25,44 +22,27 @@ spl_autoload_register(function($class){
 ini_set("include_path", '/home/q1q1eu2x/php:' . ini_get("include_path") );
 //include_once "Mail.php";
 
-
-//$arr = [];
-//
-//parse_str(file_get_contents("php://input"), $arr);
-//var_dump($arr);
-//var_dump(file_get_contents("php://input"));
-//exit;
-//var_dump(json_decode(file_get_contents("php://input"),true));
-//exit;
-
-$uri = $_SERVER['REQUEST_URI']; // URI
 $requestMethod = $_SERVER["REQUEST_METHOD"]; //requested method
+
+
+if ($requestMethod == "OPTIONS") {
+
+    exit;
+
+}
+
+$uri = $_SERVER['REQUEST_URI'];
 $self = $_SERVER['PHP_SELF'];
-
-$arguments = [];
-
 $self = str_replace("index.php","",$self);
 
 $uri = str_replace($self, '', $uri);
 
 // $uri = substr($uri, 1);
 
-//var_dump("$uri");
-//exit;
 
 $args = explode("/",$uri);
 
-$theMethod = new Ember(array_shift($args), $requestMethod);
 
-$controllerName = $theMethod->getController();
-count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
-$actionName = $theMethod->getMethod();
-
-
-
-//$actionName = array_shift($args);
-$dbInstanceName = 'default';
-$headers = [];
 $keyHolds = "";
 
 if ($requestMethod != "OPTIONS") {
@@ -75,7 +55,31 @@ if ($requestMethod != "OPTIONS") {
 
 }
 
+$arguments = [];
 
+$theMethod = new Ember(array_shift($args), \Employees\Config\Routes::$$requestMethod);
+
+$controllerName = $theMethod->getController();
+count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
+$actionName = $theMethod->getMethod();
+
+if ($requestMethod == "POST" || $requestMethod == "PUT") {
+    $payLoad = json_decode(file_get_contents("php://input"), true);
+
+    if ($payLoad) {
+
+        $phpInput = $payLoad;
+        if (array_key_exists($controllerName, $payLoad)) {
+            $_POST = $payLoad[$controllerName];
+        } else if (array_key_exists(substr($controllerName,0,-1), $payLoad)) {
+            $_POST = $payLoad[substr($controllerName,0,-1)];
+        }
+    }
+}
+
+
+//$actionName = array_shift($args);
+$dbInstanceName = 'default';
 
 Database::setInstance(
     DbConfig::DB_HOST,

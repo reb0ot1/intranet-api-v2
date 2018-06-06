@@ -41,11 +41,6 @@ class SettingsController
         $this->settingsDataService = $settingsDataService;
     }
 
-    public function options()
-    {
-
-    }
-
     public function viewData()
     {
         $sub_companies = $this->settingsDataService->getSubCompanies();

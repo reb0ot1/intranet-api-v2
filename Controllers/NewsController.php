@@ -38,10 +38,6 @@ class NewsController
         $this->dataReturn = $dataReturn;
     }
 
-    public function option() {
-
-    }
-
     public function getNews()
     {
 
