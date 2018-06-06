@@ -34,18 +34,9 @@ class EmployeesController
         $this->dataReturn = $dataReturn;
     }
 
-    public function list($active = null)
+    public function find($id = null)
     {
-
-            if ($active == null) {
-
-                $list = $this->employeeService->getListStatus("yes");
-
-            } else {
-
-                $list =  $this->employeeService->getListStatus("yes", $active);
-
-            }
+                $list =  $this->employeeService->getListStatus("yes", $id);
 
         if (is_array($list)) {
 

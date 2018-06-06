@@ -58,10 +58,15 @@ if ($requestMethod != "OPTIONS") {
 $arguments = [];
 
 $theMethod = new Ember(array_shift($args), \Employees\Config\Routes::$$requestMethod);
-
 $controllerName = $theMethod->getController();
-count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
 $actionName = $theMethod->getMethod();
+if ($controllerName == null || $actionName == null) {
+    print_r("URL root not found");
+    exit;
+}
+
+count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
+
 
 if ($requestMethod == "POST" || $requestMethod == "PUT") {
     $payLoad = json_decode(file_get_contents("php://input"), true);

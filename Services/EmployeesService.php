@@ -89,7 +89,7 @@ class EmployeesService implements EmployeesServiceInterface
 
         $stmt = $this->db->prepare($query);
 
-        $status = $stmt->execute(["yes"]);
+        $status = $stmt->execute($valuesArr);
 
         return $stmt->fetchAll();
 

@@ -11,7 +11,7 @@ namespace Employees\Config;
 
 class Routes
 {
-    static $GET = ["admin"=>"", "employees"=>"list", "news"=>"getNews", "benefits"=>"list", "files"=>"list", "feedback"=>"testGet", "settings"=>"viewData"];
+    static $GET = ["admin"=>"", "employees"=>"find", "news"=>"getNews", "benefits"=>"list", "files"=>"list", "feedback"=>"testGet", "settings"=>"viewData"];
 
     static $POST = ["admin"=>"token", "employees"=>"addemployee", "news"=>"addnews", "benefits"=>"", "files"=>"", "feedback"=>"sendfeedback", "settings"=>""];
 

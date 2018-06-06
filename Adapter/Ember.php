@@ -25,9 +25,11 @@ class Ember
 
     public function getController()
     {
+        if (array_key_exists($this->controller, $this->routes)) {
+            return $this->controller;
+        }
 
-        return $this->controller;
-
+        return null;
     }
 
     public function getMethod()
