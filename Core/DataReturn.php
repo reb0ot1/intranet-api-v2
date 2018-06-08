@@ -29,6 +29,11 @@ class DataReturn implements DataReturnInterface
         print_r(json_encode(array($this->mvcContext->getController() => $theData)));
     }
 
+    public function json($theData)
+    {
+        print_r(json_encode($theData));
+    }
+
     public function tokenReturn($token)
     {
         print_r(json_encode($token));

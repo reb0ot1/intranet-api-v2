@@ -8,7 +8,7 @@ use Employees\Core\MVC\KeyHolder;
 
 
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE');
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTION');
 header('Access-Control-Allow-Headers: Content-Type, Origin, Authorization');
 header('Content-Type: application/json; charset=utf-8');
 
@@ -60,6 +60,7 @@ $arguments = [];
 $theMethod = new Ember(array_shift($args), \Employees\Config\Routes::$$requestMethod);
 $controllerName = $theMethod->getController();
 $actionName = $theMethod->getMethod();
+
 if ($controllerName == null || $actionName == null) {
     print_r("URL root not found");
     exit;

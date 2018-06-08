@@ -13,6 +13,8 @@ interface DataReturnInterface
 {
     public function jsonData($theData);
 
+    public function json($theData);
+
     public function tokenReturn($token);
 
     public function errorResponse($status, $message=null);

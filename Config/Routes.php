@@ -13,7 +13,7 @@ class Routes
 {
     static $GET = ["admin"=>"", "employees"=>"find", "news"=>"getNews", "benefits"=>"list", "files"=>"list", "feedback"=>"testGet", "settings"=>"viewData"];
 
-    static $POST = ["admin"=>"token", "employees"=>"addemployee", "news"=>"addnews", "benefits"=>"", "files"=>"", "feedback"=>"sendfeedback", "settings"=>""];
+    static $POST = ["admin"=>"token", "employees"=>"addemployee", "news"=>"addnews", "benefits"=>"", "files"=>"uploadfile", "feedback"=>"sendfeedback", "settings"=>""];
 
     static $PUT = ["admin"=>"", "employees"=>"updateemployee", "news"=>"updatenews", "benefits"=>"", "files"=>"", "feedback"=>"", "settings"=>""];
 
