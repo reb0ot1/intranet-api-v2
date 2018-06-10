@@ -100,4 +100,8 @@ class CreatingQuerySevice implements CreatingQueryServiceInterface
         return $this->arrayValues;
     }
 
+    public function setValues($values)
+    {
+        // TODO: Implement setValues() method.
+    }
 }

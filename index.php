@@ -42,6 +42,9 @@ $uri = str_replace($self, '', $uri);
 
 $args = explode("/",$uri);
 
+if (count($args) == 0) {
+    exit;
+}
 
 $keyHolds = "";
 
@@ -56,14 +59,21 @@ if ($requestMethod != "OPTIONS") {
 }
 
 $arguments = [];
+$controller = array_shift($args);
 
-$theMethod = new Ember(array_shift($args), \Employees\Config\Routes::$$requestMethod);
+$theMethod = new Ember($controller, \Employees\Config\Routes::$$requestMethod);
 $controllerName = $theMethod->getController();
 $actionName = $theMethod->getMethod();
 
 if ($controllerName == null || $actionName == null) {
-    print_r("URL root not found");
-    exit;
+
+    if (count($args) < 2) {
+        exit;
+    }
+
+    $controllerName = $controller;
+    $actionName = array_shift($args);
+
 }
 
 count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
@@ -105,10 +115,16 @@ $mvcContext = new \Employees\Core\MVC\MVCContext(
 );
 
 
+$files = new \Employees\Core\MVC\FileUpload($_FILES, __DIR__."/".DefaultParam::FileUploadContainer);
 
 
 $app = new \Employees\Core\Application($mvcContext);
 
+if (!$app->checkControllerMethodExist() || !$app->checkControllerExists()) {
+
+    print_r("URL root not found");
+    exit;
+}
 
 $app->addClass(
     \Employees\Core\MVC\MVCContextInterface::class,
@@ -126,6 +142,11 @@ $app->addClass(
 $app->addClass(
  \Employees\Adapter\DatabaseInterface::class,
     Database::getInstance($dbInstanceName)
+);
+
+$app->addClass(
+    \Employees\Core\MVC\FileUploadInterface::class,
+    $files
 );
 
 $app->registerDependency(

@@ -17,6 +17,7 @@ class Application
     private $resolvedDependencies = [];
 
 
+
     public function registerDependency($interfaceName, $implementationName)
     {
         $this->dependencies[$interfaceName] = $implementationName;
@@ -147,5 +148,41 @@ class Application
         }
 
         return $instance;
+    }
+
+    public function checkControllerMethodExist()
+    {
+        $controllerFullQualifiedName = $this->getControllerFullQualifiedName();
+
+        if (class_exists($controllerFullQualifiedName)) {
+            $methods = array_map('strtolower',get_class_methods($controllerFullQualifiedName));
+
+            if (in_array(strtolower($this->mvcContext->getAction()), $methods)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function checkControllerExists()
+    {
+        $controllerFullQualifiedName = $this->getControllerFullQualifiedName();
+
+        if (class_exists($controllerFullQualifiedName)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function getControllerFullQualifiedName()
+    {
+        return  self::VENDOR_NAMESPACE
+            . self::SEPARATOR_NAMESPACE
+            . self::CONTROLLERS_NAMESPACE
+            . self::SEPARATOR_NAMESPACE
+            . ucfirst($this->mvcContext->getController())
+            . self::CONTROLLERS_SUFFIX;
     }
 }
