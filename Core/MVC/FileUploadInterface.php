@@ -14,4 +14,6 @@ interface FileUploadInterface
     public function upload($folder);
 
     public function getFiles();
+
+    public function remove($folder, $name);
 }

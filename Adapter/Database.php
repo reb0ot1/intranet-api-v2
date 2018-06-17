@@ -21,6 +21,25 @@ class Database implements DatabaseInterface
         return new DatabaseStatement($this->pdo->prepare($statement));
     }
 
+    public function lastId()
+    {
+        return $this->pdo->lastInsertId();
+    }
+
+    public function beginTransaction()
+    {
+        return $this->pdo->beginTransaction();
+    }
+
+    public function commit()
+    {
+        return $this->pdo->commit();
+    }
+
+    public function rollBack()
+    {
+        return $this->pdo->rollBack();
+    }
 
     public static function setInstance($host, $user, $pass, $dbName, $instanceName)
     {

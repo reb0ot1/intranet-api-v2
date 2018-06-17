@@ -33,10 +33,11 @@ class FileUpload implements FileUploadInterface
     {
         $uploadDir = $this->globalUploadFolder.$folder."/";
         $uploadedFiles = [];
+
         foreach ($this->files as $file) {
             $name = $file['name'];
 
-            $uploadFile = $uploadDir.basename($name);
+            $uploadFile = $uploadDir.$name;
 
             if (!move_uploaded_file($file['tmp_name'], $uploadFile)) {
 
@@ -48,5 +49,21 @@ class FileUpload implements FileUploadInterface
 
         return  $uploadedFiles;
 
+    }
+
+
+    public function remove($folder, $files = [])
+    {
+        $fileFolder = $this->globalUploadFolder.$folder;
+        $removedFiles = [];
+        foreach ($files as $file) {
+            $removedFiles[$file] = "notremoved";
+            if (file_exists($fileFolder."/".$file)){
+                unlink($fileFolder."/".$file);
+                $removedFiles[$file] = "removed";
+            }
+        }
+
+        return $removedFiles;
     }
 }

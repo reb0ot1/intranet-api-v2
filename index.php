@@ -16,7 +16,6 @@ header('Content-Type: application/json; charset=utf-8');
 spl_autoload_register(function($class){
     $class = str_replace("Employees\\","", $class);
     $class = str_replace("\\",DIRECTORY_SEPARATOR, $class);
-
     require_once $class . '.php';
 });
 ini_set("include_path", '/home/q1q1eu2x/php:' . ini_get("include_path") );
@@ -65,9 +64,11 @@ $theMethod = new Ember($controller, \Employees\Config\Routes::$$requestMethod);
 $controllerName = $theMethod->getController();
 $actionName = $theMethod->getMethod();
 
+
+
 if ($controllerName == null || $actionName == null) {
 
-    if (count($args) < 2) {
+    if (count($args) < 1) {
         exit;
     }
 
@@ -75,6 +76,8 @@ if ($controllerName == null || $actionName == null) {
     $actionName = array_shift($args);
 
 }
+
+
 
 count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
 
@@ -200,6 +203,14 @@ $app->registerDependency(\Employees\Services\BenefitsServiceInterface::class,
 $app->registerDependency(\Employees\Services\SettingsDataServiceInterface::class,
     \Employees\Services\SettingsDataService::class
 );
+
+$app->registerDependency(\Employees\Services\DocumentServiceInterface::class,
+    \Employees\Services\DocumentService::class
+);
+$app->registerDependency(\Employees\Services\DocumentCategoriesServiceInterface::class,
+    \Employees\Services\DocumentCategoryService::class
+);
+
 
 
 $app->start();

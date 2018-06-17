@@ -53,7 +53,7 @@ class DataReturn implements DataReturnInterface
     {
         http_response_code($status);
         if ($message) {
-            print_r('{"success":[{"status": "'.$status.'","title": "'.$message.'": "Feedback is sent"}]}');
+            print_r('{"success":[{"status": "'.$status.'","title": "'.$message.'"}]}');
         }
     }
 
