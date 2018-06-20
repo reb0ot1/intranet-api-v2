@@ -5,6 +5,7 @@ namespace Employees\Core\MVC;
 
 class MVCContext implements MVCContextInterface
 {
+
     private $controller;
 
     private $action;
@@ -13,6 +14,8 @@ class MVCContext implements MVCContextInterface
 
     private $arguments = [];
 
+    private $httpAction;
+
     /**
      * MVCContext constructor.
      * @param $controller
@@ -20,12 +23,13 @@ class MVCContext implements MVCContextInterface
      * @param $uriJunk
      * @param array $arguments
      */
-    public function __construct(string $controller, string $action, string $uriJunk, array $arguments)
+    public function __construct(string $controller, string $action, string $uriJunk, array $arguments, $httpAction)
     {
         $this->controller = $controller;
         $this->action = $action;
         $this->uriJunk = $uriJunk;
         $this->arguments = $arguments;
+        $this->httpAction = $httpAction;
 
     }
 
@@ -93,5 +97,20 @@ class MVCContext implements MVCContextInterface
         $this->arguments = $arguments;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getHttpAction()
+    {
+        return $this->httpAction;
+    }
+
+    /**
+     * @param mixed $httpAction
+     */
+    public function setHttpAction($httpAction)
+    {
+        $this->httpAction = $httpAction;
+    }
 
 }

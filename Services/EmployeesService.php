@@ -32,9 +32,9 @@ class EmployeesService implements EmployeesServiceInterface
                   first_name AS firstName,
                   last_name AS lastName,
                   gender,
-                  company,
-                  position,
-                  team,
+                  sub_company_id AS company,
+                  position_id AS position,
+                  team_id AS team,
                   start_date AS dateStart,
                   birthday,
                   image 
@@ -56,8 +56,9 @@ class EmployeesService implements EmployeesServiceInterface
                   employees.first_name AS firstName,
                   employees.last_name AS lastName,
                   employees.gender,
-                  employees.position,
-                  employees.team,
+                  employees.sub_company_id as company,
+                  employees.position_id AS position,
+                  employees.team_id AS team,
                   employees.start_date AS dateStart,
                   employees.birthday,
                   employees.image,
@@ -74,11 +75,9 @@ class EmployeesService implements EmployeesServiceInterface
                   employees.book,
                   employees.skype,
                   employees.book,
-                  employees.email, 
-                  company_sub_groups.name AS company
+                  employees.email 
                   FROM employees 
-                  INNER JOIN company_sub_groups 
-                  WHERE employees.sub_company_id = company_sub_groups.id AND employees.active = ?";
+                  WHERE employees.active = ?";
 
         $valuesArr = [$active];
 
@@ -102,8 +101,9 @@ class EmployeesService implements EmployeesServiceInterface
                   employees.first_name AS firstName,
                   employees.last_name AS lastName,
                   employees.gender,
-                  employees.position,
-                  employees.team,
+                  employees.sub_company_id AS company,
+                  employees.position_id AS position,
+                  employees.team_id AS team,
                   employees.start_date AS dateStart,
                   employees.birthday,
                   employees.image,
@@ -120,11 +120,9 @@ class EmployeesService implements EmployeesServiceInterface
                   employees.book,
                   employees.skype,
                   employees.book,
-                  employees.email,
-                  company_sub_groups.name AS company 
+                  employees.email 
                   FROM employees 
-                  INNER JOIN company_sub_groups 
-                  WHERE employees.sub_company_id = company_sub_groups.id AND employees.id = ?";
+                  WHERE employees.id = ?";
 
         $stmt = $this->db->prepare($query);
         $stmt->execute([$id]);
@@ -142,8 +140,9 @@ class EmployeesService implements EmployeesServiceInterface
                   employees.first_name AS firstName,
                   employees.last_name AS lastName,
                   employees.gender,
-                  employees.position,
-                  employees.team,
+                  employees.sub_company_id AS company,
+                  employees.position_id AS position,
+                  employees.team_id AS team,
                   employees.start_date AS dateStart,
                   employees.birthday,
                   employees.image,
@@ -160,11 +159,9 @@ class EmployeesService implements EmployeesServiceInterface
                   employees.book,
                   employees.skype,
                   employees.book,
-                  employees.email, 
-                  company_sub_groups.name AS company 
+                  employees.email 
                   FROM employees 
-                  INNER JOIN company_sub_groups 
-                  WHERE employees.sub_company_id = company_sub_groups.id  AND employees.unique_str_code = ? AND employees.active = ?";
+                  WHERE employees.unique_str_code = ? AND employees.active = ?";
 
         $stmt = $this->db->prepare($query);
 
@@ -183,8 +180,8 @@ class EmployeesService implements EmployeesServiceInterface
                   last_name,
                   gender,
                   sub_company_id,
-                  position,
-                  team,
+                  position_id,
+                  team_id,
                   start_date,
                   birthday,
                   image,
@@ -244,8 +241,8 @@ class EmployeesService implements EmployeesServiceInterface
                           last_name = ?,
                           gender = ?,
                           sub_company_id = ?,
-                          position = ?,
-                          team = ?,
+                          position_id = ?,
+                          team_id = ?,
                           start_date = ?,
                           birthday = ?,
                           image = ?,
@@ -293,54 +290,6 @@ class EmployeesService implements EmployeesServiceInterface
             $empBindingModel->getEmail(),
             $empBindingModel->getId()
         ]);
-//
-//        $updatePropArray = [
-//            "first_name"=>$empBindingModel->getFirstName(),
-//            "last_name"=>$empBindingModel->getLastName(),
-//            "gender"=>$empBindingModel->getGender(),
-//            "company"=>$empBindingModel->getCompany(),
-//            "position"=>$empBindingModel->getPosition(),
-//            "team"=>$empBindingModel->getTeam(),
-//            "start_date"=>$empBindingModel->getDateStart(),
-//            "birthday"=>$empBindingModel->getBirthday(),
-//            "image" => $empBindingModel->getImage(),
-//            "photo" => $empBindingModel->getPhoto(),
-//            "avatar" => $empBindingModel->getAvatar(),
-//            "active"=>$empBindingModel->getActive(),
-//
-//        ];
-//
-//        $updateAddInfo = [
-//            "education" => $empBindingModel->getEducation(),
-//            "expertise" => $empBindingModel->getExpertise(),
-//            "skills" => $empBindingModel->getSkills(),
-//            "languages" => $empBindingModel->getLanguages(),
-//            "hobbies" => $empBindingModel->getHobbies(),
-//            "pet" => $empBindingModel->getPet(),
-//            "song" => $empBindingModel->getSong(),
-//            "thought" => $empBindingModel->getThought(),
-//            "book" => $empBindingModel->getBook(),
-//            "skype" => $empBindingModel->getSkype(),
-//            "email" => $empBindingModel->getEmail()
-//        ];
-//
-//
-//        $createQuery = new CreatingQueryService();
-//        $createQuery->setValues($updatePropArray);
-//        $createQuery->setQueryUpdateEmp($empBindingModel->getId(), "id = ?");
-//
-//        $createQuery2 = new CreatingQueryService();
-//        $createQuery2->setValues($updateAddInfo);
-//        $createQuery2->setQueryUpdateEmp($empBindingModel->getId(), "emp_id = ?");
-//
-//        $query = "UPDATE employees SET ".$createQuery->getQuery();
-//        $query2 = "UPDATE employees_add_info SET ".$createQuery2->getQuery();
-//
-//
-//
-//        $stmt = $this->db->prepare($query.";".$query2.";");
-//
-//        return $stmt->execute(array_merge($createQuery->getValues(),$createQuery2->getValues()));
 
     }
 
@@ -355,19 +304,6 @@ class EmployeesService implements EmployeesServiceInterface
         $stmt = $this->db->prepare($query);
 
         return $stmt->execute(["no",$empId]);
-    }
-
-    public function updateAddInfoId($key, $empId)
-    {
-        $query = "UPDATE 
-                  employees_add_info
-                  SET 
-                  emp_id = ?  
-                  WHERE unique_str_code = ?";
-
-        $stmt = $this->db->prepare($query);
-
-        return $stmt->execute([$empId, $key]);
     }
 
 

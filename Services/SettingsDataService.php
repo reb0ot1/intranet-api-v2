@@ -10,7 +10,7 @@ namespace Employees\Services;
 
 
 use Employees\Adapter\DatabaseInterface;
-use Employees\Models\DB\Subgroups;
+use Employees\Models\DB\Dropdown;
 
 class SettingsDataService implements SettingsDataServiceInterface
 {
@@ -22,9 +22,9 @@ class SettingsDataService implements SettingsDataServiceInterface
         $this->db = $db;
     }
 
-    public function getSubCompanies()
+    public function companies()
     {
-        $query = "SELECT * FROM company_sub_groups";
+        $query = "SELECT * FROM company_sub_groups ORDER BY name ASC" ;
 
         $stmt = $this->db->prepare($query);
 
@@ -32,14 +32,40 @@ class SettingsDataService implements SettingsDataServiceInterface
 
 //        var_dump($stmt->fetchAll());
 
-        while ($result = $stmt->fetchObject(Subgroups::class)) {
+        while ($result = $stmt->fetchObject(Dropdown::class)) {
             yield $result;
         }
     }
 
-    public function getPossitions()
+
+    public function positions()
     {
-        // TODO: Implement getPossitions() method.
+        $query = "SELECT * FROM company_positions ORDER BY name ASC" ;
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute();
+
+//        var_dump($stmt->fetchAll());
+
+        while ($result = $stmt->fetchObject(Dropdown::class)) {
+            yield $result;
+        }
     }
 
+    public function teams()
+    {
+        $query = "SELECT * FROM company_teams ORDER BY name ASC" ;
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute();
+
+//        var_dump($stmt->fetchAll());
+
+        while ($result = $stmt->fetchObject(Dropdown::class)) {
+            yield $result;
+        }
+
+    }
 }

@@ -9,7 +9,7 @@
 namespace Employees\Models\DB;
 
 
-class Subgroups
+class Dropdown
 {
     private $id;
     private $name;

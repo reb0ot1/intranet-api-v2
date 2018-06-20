@@ -36,14 +36,13 @@ class SettingsController
         $this->employeeService = $employeesService;
         $this->encryptionService = $encryptionService;
         $this->authenticationService = $authenticationService;
-        $this->binaryImage = $binService;
         $this->dataReturn = $dataReturn;
         $this->settingsDataService = $settingsDataService;
     }
 
-    public function viewData()
+    public function getDropDownOptions($dropdown)
     {
-        $sub_companies = $this->settingsDataService->getSubCompanies();
+        $sub_companies = $this->settingsDataService->$dropdown();
 
         $selectOptions = [];
 
@@ -52,12 +51,12 @@ class SettingsController
          */
         foreach ($sub_companies as $sub_company) {
 
-            $arr = array("id"=>$sub_company->getId(), "name"=> $sub_company->getName());
+            $arr = array("id"=>$sub_company->getId(), "optionName"=> $sub_company->getName());
 
             $selectOptions[] = $arr;
         }
 
-        return $this->dataReturn->jsonData(array("companies"=>$selectOptions));
+        return $this->dataReturn->jsonData($selectOptions);
 
     }
 }

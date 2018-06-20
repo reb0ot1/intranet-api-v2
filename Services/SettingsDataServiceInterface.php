@@ -11,8 +11,10 @@ namespace Employees\Services;
 
 interface SettingsDataServiceInterface
 {
-    public function getSubCompanies();
+    public function companies();
 
-    public function getPossitions();
+    public function positions();
+
+    public function teams();
 
 }

@@ -47,39 +47,52 @@ if (count($args) == 0) {
 
 $keyHolds = "";
 
-if ($requestMethod != "OPTIONS") {
-
     $headers = getallheaders();
 
     if (array_key_exists("Authorization", $headers)) {
         $keyHolds = $headers["Authorization"];
     }
 
-}
+$routes = \Employees\Config\Routes::$$requestMethod;
 
 $arguments = [];
-$controller = array_shift($args);
-
-$theMethod = new Ember($controller, \Employees\Config\Routes::$$requestMethod);
-$controllerName = $theMethod->getController();
-$actionName = $theMethod->getMethod();
+$uiAction = array_shift($args);
 
 
+if (!array_key_exists($uiAction, $routes)) {
+    exit;
+}
 
-if ($controllerName == null || $actionName == null) {
+//$theMethod = new Ember($controller, $args, \Employees\Config\Routes::$$requestMethod);
+//$controllerName = $theMethod->getController();
+//$actionName = $theMethod->getMethod();
+$controllerName = $routes[$uiAction]["controller"];
+$actionName = $routes[$uiAction]["method"];
 
-    if (count($args) < 1) {
-        exit;
-    }
+if (count($routes[$uiAction]["arguments"]) > 0) {
 
-    $controllerName = $controller;
-    $actionName = array_shift($args);
+    array_merge($routes[$uiAction]["arguments"], $args);
+    $args = $routes[$uiAction]["arguments"];
+//    array_unshift($routes[$controller]["arguments"], $args);
 
 }
 
 
 
-count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
+//if ($controllerName == null || $actionName == null) {
+//
+//    if (count($args) < 1) {
+//        exit;
+//    }
+//
+//    $controllerName = $controller;
+//    $actionName = array_shift($args);
+//
+//}
+
+
+
+//count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
 
 
 if ($requestMethod == "POST" || $requestMethod == "PUT") {
@@ -95,7 +108,6 @@ if ($requestMethod == "POST" || $requestMethod == "PUT") {
         }
     }
 }
-
 
 //$actionName = array_shift($args);
 $dbInstanceName = 'default';
@@ -113,9 +125,10 @@ $mvcContext = new \Employees\Core\MVC\MVCContext(
     $controllerName,
     $actionName,
     $self,
-    $arguments
-//    $args
+    $args,
+    $uiAction
 );
+
 
 
 $files = new \Employees\Core\MVC\FileUpload($_FILES, __DIR__."/".DefaultParam::FileUploadContainer);
@@ -128,6 +141,8 @@ if (!$app->checkControllerMethodExist() || !$app->checkControllerExists()) {
     print_r("URL root not found");
     exit;
 }
+
+
 
 $app->addClass(
     \Employees\Core\MVC\MVCContextInterface::class,

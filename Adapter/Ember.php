@@ -15,8 +15,12 @@ class Ember
 
     private $controller;
 
+    private $method;
 
-    public function __construct($controller, $roots)
+    private $arguments;
+
+
+    public function __construct($controller, $arguments, $roots)
     {
         $this->controller = $controller;
         $this->routes = $roots;
