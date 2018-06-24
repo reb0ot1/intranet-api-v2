@@ -13,5 +13,7 @@ interface DatabaseStatementInterface
 
     public function fetchObject(string $class);
 
+    public function fetchColumn();
+
     public function rowCount();
 }

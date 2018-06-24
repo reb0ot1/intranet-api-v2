@@ -57,7 +57,7 @@ $routes = \Employees\Config\Routes::$$requestMethod;
 
 $arguments = [];
 $uiAction = array_shift($args);
-
+$filesContainer = [];
 
 if (!array_key_exists($uiAction, $routes)) {
     exit;
@@ -79,33 +79,36 @@ if (count($routes[$uiAction]["arguments"]) > 0) {
 
 
 
-//if ($controllerName == null || $actionName == null) {
-//
-//    if (count($args) < 1) {
-//        exit;
-//    }
-//
-//    $controllerName = $controller;
-//    $actionName = array_shift($args);
-//
-//}
-
-
-
-//count($args) > 0 ? array_push($arguments,array_shift($args)) : $arguments ;
-
-
 if ($requestMethod == "POST" || $requestMethod == "PUT") {
+    if (count($_POST) == 1) {
+        $_POST = array_shift($_POST);
+    }
+
     $payLoad = json_decode(file_get_contents("php://input"), true);
 
     if ($payLoad) {
 
-        $phpInput = $payLoad;
-        if (array_key_exists($controllerName, $payLoad)) {
-            $_POST = $payLoad[$controllerName];
-        } else if (array_key_exists(substr($controllerName,0,-1), $payLoad)) {
-            $_POST = $payLoad[substr($controllerName,0,-1)];
+        $_POST = array_shift($payLoad);
+    }
+
+    if ($_FILES) {
+
+        if (!array_key_exists("name",$_FILES)) {
+
+            $_FILES = array_shift($_FILES);
+
         }
+        $filesArray = [];
+        foreach ($_FILES as $key=>$value) {
+            if (is_array($value)) {
+                $filesArray[$key] = array_shift($value);
+            } else {
+                $filesArray[$key] = $value;
+            }
+        }
+
+        $filesContainer[] = $filesArray;
+
     }
 }
 
@@ -131,7 +134,7 @@ $mvcContext = new \Employees\Core\MVC\MVCContext(
 
 
 
-$files = new \Employees\Core\MVC\FileUpload($_FILES, __DIR__."/".DefaultParam::FileUploadContainer);
+$files = new \Employees\Core\MVC\FileUpload($filesContainer, __DIR__."/".DefaultParam::FileUploadContainer);
 
 
 $app = new \Employees\Core\Application($mvcContext);

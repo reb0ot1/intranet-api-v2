@@ -36,6 +36,11 @@ class DatabaseStatement implements DatabaseStatementInterface
         return $this->stmt->fetchObject($class);
     }
 
+    public function fetchColumn()
+    {
+        return $this->stmt->fetchColumn();
+    }
+
     public function rowCount()
     {
         return $this->stmt->rowCount();

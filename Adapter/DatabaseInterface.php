@@ -10,7 +10,7 @@ interface DatabaseInterface
      */
     public function prepare($statement) : DatabaseStatementInterface;
 
-    public function lastId();
+    public function lastInsertId();
 
     public function beginTransaction();
 

@@ -35,8 +35,11 @@ class FileUpload implements FileUploadInterface
         $uploadedFiles = [];
 
         foreach ($this->files as $file) {
-            $name = $file['name'];
 
+            $name = $file['name'];
+            $ext = explode(".",$name);
+            $type = $ext[count($ext)-1];
+            $size = $file["size"];
             $uploadFile = $uploadDir.$name;
 
             if (!move_uploaded_file($file['tmp_name'], $uploadFile)) {
@@ -44,7 +47,7 @@ class FileUpload implements FileUploadInterface
                 throw new \Exception("File was not uploaded");
             }
 
-            $uploadedFiles[] = $name;
+            $uploadedFiles[] = array("name"=>$name, "type"=>$type, "size"=>$size);
         }
 
         return  $uploadedFiles;
@@ -65,5 +68,10 @@ class FileUpload implements FileUploadInterface
         }
 
         return $removedFiles;
+    }
+
+    private function file_exist()
+    {
+
     }
 }

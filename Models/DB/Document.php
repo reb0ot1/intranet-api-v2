@@ -12,8 +12,12 @@ namespace Employees\Models\DB;
 class Document
 {
     private $id;
-    private $name;
-    private $folder;
+    private $categoryId;
+    private $title;
+    private $description;
+    private $date;
+    private $type;
+    private $url;
 
     /**
      * @return mixed
@@ -34,34 +38,97 @@ class Document
     /**
      * @return mixed
      */
-    public function getName()
+    public function getCategoryId()
     {
-        return $this->name;
+        return $this->categoryId;
     }
 
     /**
-     * @param mixed $name
+     * @param mixed $categoryId
      */
-    public function setName($name)
+    public function setCategoryId($categoryId)
     {
-        $this->name = $name;
+        $this->categoryId = $categoryId;
     }
 
     /**
      * @return mixed
      */
-    public function getFolder()
+    public function getTitle()
     {
-        return $this->folder;
+        return $this->title;
     }
 
     /**
-     * @param mixed $folder
+     * @param mixed $title
      */
-    public function setFolder($folder)
+    public function setTitle($title)
     {
-        $this->folder = $folder;
+        $this->title = $title;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param mixed $date
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param mixed $url
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
 
 }

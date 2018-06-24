@@ -16,6 +16,7 @@ class Routes
         "admin"=>["controller"=>"admin", "method"=>"","arguments"=>[]],
         "employees"=>["controller"=>"employees", "method"=>"find","arguments"=>[]],
         "news"=>["controller"=>"news", "method"=>"getNews","arguments"=>[]],
+        "newsletters"=>["controller"=>"newsletters", "method"=>"findall","arguments"=>[]],
         "companies"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["companies"]],
         "positions"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["positions"]],
         "teams"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["teams"]],
@@ -27,6 +28,7 @@ class Routes
         "admin"=>["controller"=>"admin", "method"=>"token","arguments"=>[]],
         "employees"=>["controller"=>"employees", "method"=>"addemployee","arguments"=>[]],
         "news"=>["controller"=>"news", "method"=>"addnews","arguments"=>[]],
+        "imageupload"=>["controller"=>"files","method"=>"httpNewsImageUpload", "arguments"=>[]],
         "feedback"=>["controller"=>"feedback", "method"=>"sendfeedback","arguments"=>[]],
         "settings"=>["controller"=>"settings", "method"=>"","arguments"=>[]],
         "newsletters"=>["controller"=>"newsletters", "method"=>"addDocument","arguments"=>[]]

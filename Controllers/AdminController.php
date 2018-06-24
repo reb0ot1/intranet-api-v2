@@ -36,7 +36,8 @@ class AdminController
         $this->dataReturn = $dataReturn;
     }
 
-    public function token(UserLoginBindingModel $bindingModel) {
+    public function token(UserLoginBindingModel $bindingModel)
+    {
 
             $username = $bindingModel->getUsername();
             $password = $bindingModel->getPassword();

@@ -57,12 +57,18 @@ class NewslettersController
         $this->categoriesService = $categoriesService;
     }
 
+    public function findall()
+    {
+        $newsletters = $this->documentService->all();
+
+        return $this->dataReturn->jsonData($newsletters);
+
+    }
 
     public function addDocument(DocumentBindingModel $documentBindingModel)
     {
-//        if ($this->authenticationService->isTokenCorrect()) {
+        if ($this->authenticationService->isTokenCorrect()) {
 
-        if (true) {
             /**
              * @var Document $categories
              */
@@ -82,15 +88,17 @@ class NewslettersController
                 $uploadedFiles = $this->fileUpload->upload($categories->getFolder());
                 $documentBindingModel->setFiles($uploadedFiles);
 
-                $this->documentService->add($documentBindingModel);
+                $documentId = $this->documentService->add($documentBindingModel);
 
-                return $this->dataReturn->successResponse(200, "Files are uploaded.");
+                return $this->dataReturn->jsonData($this->documentService->findOne($documentId));
 
             } catch (\Exception $e) {
                 return $this->dataReturn->errorResponse(400, $e->getMessage());
             }
 
         }
+
+        return $this->dataReturn->errorResponse(401);
     }
 
 }

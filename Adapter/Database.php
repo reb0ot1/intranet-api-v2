@@ -21,7 +21,7 @@ class Database implements DatabaseInterface
         return new DatabaseStatement($this->pdo->prepare($statement));
     }
 
-    public function lastId()
+    public function lastInsertId()
     {
         return $this->pdo->lastInsertId();
     }
