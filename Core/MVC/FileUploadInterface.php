@@ -16,4 +16,9 @@ interface FileUploadInterface
     public function getFiles();
 
     public function remove($folder, $name);
+
+    public function download($filename);
+
+    public function validate($acceptableTypes, $sizeLimit = 10000000);
+
 }

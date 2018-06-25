@@ -37,17 +37,18 @@ class FileUpload implements FileUploadInterface
         foreach ($this->files as $file) {
 
             $name = $file['name'];
-            $ext = explode(".",$name);
-            $type = $ext[count($ext)-1];
+            $fileNameCheck = explode(".",$name);
+            $type = $fileNameCheck[count($fileNameCheck)-1];
             $size = $file["size"];
-            $uploadFile = $uploadDir.$name;
+            $filename = $fileNameCheck[0]."_".md5(time()).".".$type;
+            $uploadFile = $uploadDir.$filename;
 
             if (!move_uploaded_file($file['tmp_name'], $uploadFile)) {
 
                 throw new \Exception("File was not uploaded");
             }
 
-            $uploadedFiles[] = array("name"=>$name, "type"=>$type, "size"=>$size);
+            $uploadedFiles[] = array("name"=>$filename, "type"=>$type, "size"=>$size);
         }
 
         return  $uploadedFiles;
@@ -70,8 +71,41 @@ class FileUpload implements FileUploadInterface
         return $removedFiles;
     }
 
-    private function file_exist()
+    public function download($filename)
     {
+            $file = $filename;
 
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="'.basename($file).'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            readfile($file);
+    }
+
+
+    public function validate($acceptableTypes, $sizeLimit = 10000000)
+    {
+        $limit = $sizeLimit;
+        $acceptableFileTypes = $acceptableTypes;
+
+        foreach ($this->getFiles() as $file) {
+            $filename = explode(".",$file["name"]);
+            $ext = array_pop($filename);
+            if ($file["size"] > $limit ) {
+                return false;
+                break;
+            }
+
+            if (!in_array($ext, $acceptableFileTypes)){
+
+                return false;
+                break;
+            }
+        }
+
+        return true;
     }
 }

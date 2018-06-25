@@ -50,8 +50,16 @@ $keyHolds = "";
     $headers = getallheaders();
 
     if (array_key_exists("Authorization", $headers)) {
-        $keyHolds = $headers["Authorization"];
+        $token = explode(" ", $headers["Authorization"]);
+
+        if (count($token) == 2) {
+            $keyType = $token[0];
+            $keyHolds = $token[1];
+        } else {
+            $keyHolds = $token[0];
+        }
     }
+
 
 $routes = \Employees\Config\Routes::$$requestMethod;
 

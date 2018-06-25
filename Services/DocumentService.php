@@ -17,7 +17,7 @@ use Employees\Models\DB\Employee;
 
 class DocumentService implements DocumentServiceInterface
 {
-    const url = DefaultParam::ServerRoot.DefaultParam::FileUploadContainer."documents/newsletters/";
+    const url = DefaultParam::ServerRoot."newsletterdownload/";
     private $db;
 
     public function __construct(DatabaseInterface $db)

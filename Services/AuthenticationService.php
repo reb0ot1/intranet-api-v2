@@ -52,7 +52,7 @@ class AuthenticationService implements AuthenticationServiceInterface
 
         $stmt = $this->db->prepare($query);
 
-        if ($stmt->execute([substr($this->holder->getTokenKey(),7)])) {
+        if ($stmt->execute([$this->holder->getTokenKey()])) {
 
             $result = $stmt->fetch();
             if (is_array($result)) {
@@ -73,7 +73,7 @@ class AuthenticationService implements AuthenticationServiceInterface
 
         $stmt = $this->db->prepare($query);
 
-        $stmt->execute([substr($this->holder->getTokenKey(),7)]);
+        $stmt->execute([$this->holder->getTokenKey()]);
 
         $result = $stmt->fetch();
 

@@ -83,6 +83,10 @@ class NewslettersController
                 return $this->dataReturn->errorResponse(400, "No file was sent.");
             }
 
+            if (!$this->fileUpload->validate(["pdf"])) {
+                return $this->dataReturn->errorResponse(400, "Check your file extension and file size.");
+            }
+
             try {
 
                 $uploadedFiles = $this->fileUpload->upload($categories->getFolder());
@@ -99,6 +103,18 @@ class NewslettersController
         }
 
         return $this->dataReturn->errorResponse(401);
+    }
+
+    public function downloadNewsletter($filename = null)
+    {
+        $file = dirname(__DIR__)."\webroot\documents\\newsletters\\".$filename;
+
+        if (file_exists($file)) {
+            $this->fileUpload->download($file);
+        }
+
+        return $this->dataReturn->errorResponse(400,"File not found");
+
     }
 
 }

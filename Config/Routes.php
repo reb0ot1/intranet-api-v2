@@ -21,7 +21,8 @@ class Routes
         "positions"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["positions"]],
         "teams"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["teams"]],
         "benefits"=>["controller"=>"benefits", "method"=>"list","arguments"=>[]],
-        "feedback"=>["controller"=>"feedback", "method"=>"testGet","arguments"=>[]]
+        "feedback"=>["controller"=>"feedback", "method"=>"testGet","arguments"=>[]],
+        "newsletterdownload"=>["controller"=>"newsletters", "method"=>"downloadNewsletter","arguments"=>[]]
     ];
 
     static $POST = [
