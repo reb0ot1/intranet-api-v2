@@ -11,11 +11,7 @@ namespace Employees\Services;
 
 class ImageFromBinService implements ImageFromBinServiceInterface
 {
-    private $pattern = "/^data:image\/(png|jpeg);base64,/";
-
-    private function getTheImageType($data) {
-
-    }
+    private $pattern = "/^data:image\/(png|jpeg|jpg);base64,/";
 
     private function decodeBinary($binaryData)
     {
@@ -25,39 +21,63 @@ class ImageFromBinService implements ImageFromBinServiceInterface
         return $data;
     }
 
-    public function checkBinaryData($binaryData) : bool
+    private function getImageType($data)
     {
-        $im = imagecreatefromstring($this->decodeBinary($binaryData));
+        preg_match($this->pattern, $data, $matches, PREG_OFFSET_CAPTURE);
 
-        if ($im !== false) {
-            return true;
-        }
-
-        return false;
+        return array_pop($matches)[0];
     }
 
-    public function createImage($binaryData, $path, $imageName, $imgType) : bool
+    public function checkImageType($data)
     {
+        foreach($data as $binaryImage) {
 
-        $data = $this->decodeBinary($binaryData);
-        if (strlen($data) > 0) {
+            if (!preg_match($this->pattern, $binaryImage)) {
+                return false;
+            }
+        }
 
-            $im = imagecreatefromstring($data);
+        return true;
+    }
 
-            if ($im !== false) {
-                file_put_contents($path.$imageName.'.'.$imgType, $data);
+    public function checkBinaryData($binaryData)
+    {
+        $imageBinaryData = [];
+        foreach ($binaryData as $key => $value) {
 
-                return true;
+//            $im = imagecreatefromstring($this->decodeBinary($value));
+
+            if (preg_match($this->pattern, $value)) {
+                $imageBinaryData[$key] = $value;
+            }
+        }
+
+        return $imageBinaryData;
+    }
+
+    public function createImage($binaryData, $path)
+    {
+        $uploadedImages = [];
+            foreach ($binaryData as $key=>$image) {
+                $ext = $this->getImageType($image);
+                $data = $this->decodeBinary($image);
+                if (strlen($data) > 0) {
+                    $imageName = $key.'.'.$ext;
+                    file_put_contents($path.$imageName, $data);
+                    $uploadedImages[$key] = $imageName;
+                }
             }
 
-        }
-        
-        return false;
+        return $uploadedImages;
     }
 
-    public function removeImage($imagePath) : bool
+    public function removeImage($imageNames, $path)
     {
-        return unlink($imagePath);
+        foreach ($imageNames as $image) {
+            unlink($path.$image);
+        }
+
+        return true;
     }
 
 }

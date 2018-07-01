@@ -11,6 +11,7 @@ namespace Employees\Services;
 
 use Employees\Adapter\DatabaseInterface;
 use Employees\Models\Binding\Emp\EmpBindingModel;
+use Employees\Config\DefaultParam;
 use Employees\Models\DB\Employee;
 
 
@@ -18,6 +19,7 @@ class EmployeesService implements EmployeesServiceInterface
 {
 
     private $db;
+    const url = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer;
 
     public function __construct(DatabaseInterface $db)
     {
@@ -106,9 +108,9 @@ class EmployeesService implements EmployeesServiceInterface
                   employees.team_id AS team,
                   employees.start_date AS dateStart,
                   employees.birthday,
-                  employees.image,
-                  employees.avatar, 
-                  employees.photo, 
+                  CONCAT('".self::url."',employees.image) AS image,
+                  CONCAT('".self::url."',employees.avatar) AS avatar, 
+                  CONCAT('".self::url."',employees.photo) AS photo, 
                   employees.education,
                   employees.expertise,
                   employees.skills,
@@ -171,11 +173,10 @@ class EmployeesService implements EmployeesServiceInterface
         return $result;
     }
 
-    public function addEmp(EmpBindingModel $model, $uniqueStrId)
+    public function addEmp(EmpBindingModel $model)
     {
 
-
-        $query = "INSERT INTO employees (
+            $query = "INSERT INTO employees (
                   first_name,
                   last_name,
                   gender,
@@ -188,7 +189,6 @@ class EmployeesService implements EmployeesServiceInterface
                   avatar,
                   photo, 
                   active,
-                  unique_str_code,
                   education,
                   expertise,
                   skills,
@@ -199,37 +199,37 @@ class EmployeesService implements EmployeesServiceInterface
                   thought,
                   book,
                   skype,
-                  email) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        
-        $stmt = $this->db->prepare($query);
-        $result =  $stmt->execute([
-            $model->getFirstName(),
-            $model->getLastName(),
-            $model->getGender(),
-            $model->getCompany(),
-            $model->getPosition(),
-            $model->getTeam(),
-            $model->getDateStart(),
-            $model->getBirthday(),
-            $model->getImage(),
-            $model->getAvatar(),
-            $model->getPhoto(),
-            $model->getActive(),
-            $uniqueStrId,
-            $model->getEducation(),
-            $model->getExpertise(),
-            $model->getSkills(),
-            $model->getLanguages(),
-            $model->getHobbies(),
-            $model->getPet(),
-            $model->getSong(),
-            $model->getThought(),
-            $model->getBook(),
-            $model->getSkype(),
-            $model->getEmail(),
-        ]);
+                  email) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-        return $result;
+            $stmt = $this->db->prepare($query);
+            $result = $stmt->execute([
+                $model->getFirstName(),
+                $model->getLastName(),
+                $model->getGender(),
+                $model->getCompany(),
+                $model->getPosition(),
+                $model->getTeam(),
+                $model->getDateStart(),
+                $model->getBirthday(),
+                $model->getImage(),
+                $model->getAvatar(),
+                $model->getPhoto(),
+                $model->getActive(),
+                $model->getEducation(),
+                $model->getExpertise(),
+                $model->getSkills(),
+                $model->getLanguages(),
+                $model->getHobbies(),
+                $model->getPet(),
+                $model->getSong(),
+                $model->getThought(),
+                $model->getBook(),
+                $model->getSkype(),
+                $model->getEmail(),
+            ]);
+
+            return $this->db->lastInsertId();
+
     }
 
 //    public function updEmp(EmpBindingModel $model)
