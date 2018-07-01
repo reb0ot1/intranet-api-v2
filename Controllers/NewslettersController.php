@@ -10,6 +10,7 @@
 namespace Employees\Controllers;
 
 
+use Employees\Config\DefaultParam;
 use Employees\Models\Binding\Document\DocumentBindingModel;
 use Employees\Core\DataReturnInterface;
 use Employees\Core\MVC\FileUploadInterface;
@@ -107,14 +108,44 @@ class NewslettersController
 
     public function downloadNewsletter($filename = null)
     {
-        $file = dirname(__DIR__)."\webroot\documents\\newsletters\\".$filename;
+        $fileQuery = $this->documentService->findOne(55); //for testing purpose
+
+        $file = dirname(__DIR__)."\webroot\documents\\newsletters\\".$fileQuery["name"];
 
         if (file_exists($file)) {
-            $this->fileUpload->download($file);
+            try{
+                $this->fileUpload->download($file);
+                return true;
+            } catch (\Exception $e){
+                return $this->dataReturn->errorResponse(400,$e->getMessage());
+            }
+//            header("location:".DefaultParam::ServerRoot.$file);
+
         }
 
         return $this->dataReturn->errorResponse(400,"File not found");
 
+    }
+
+    public function remove($newsletterId)
+    {
+
+        $newsletterFolder = dirname(__DIR__)."\webroot\documents\\newsletters\\";
+        $newsletter = $this->documentService->findOne($newsletterId);
+        $newsletterFileName = $newsletter["name"];
+        if (!$newsletter) {
+            return $this->dataReturn->errorResponse(400,"Newsletter not found");
+        }
+
+        if ($this->documentService->remove($newsletterId)){
+            if (file_exists($newsletterFolder.$newsletterFileName)) {
+                $test = $this->fileUpload->remove("\documents\\newsletters\\", array($newsletterFileName));
+            }
+
+            return $this->dataReturn->jsonData(["id"=>$newsletterId]);
+        }
+
+        return $this->dataReturn->errorResponse(400,"The newsletter was not removed. Please try again");
     }
 
 }

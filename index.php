@@ -3,8 +3,6 @@
 use Employees\Adapter\Database;
 use Employees\Config\DbConfig;
 use Employees\Config\DefaultParam;
-use Employees\Adapter\Ember;
-use Employees\Core\MVC\KeyHolder;
 
 
 header('Access-Control-Allow-Origin: *');
@@ -71,9 +69,6 @@ if (!array_key_exists($uiAction, $routes)) {
     exit;
 }
 
-//$theMethod = new Ember($controller, $args, \Employees\Config\Routes::$$requestMethod);
-//$controllerName = $theMethod->getController();
-//$actionName = $theMethod->getMethod();
 $controllerName = $routes[$uiAction]["controller"];
 $actionName = $routes[$uiAction]["method"];
 
@@ -81,7 +76,6 @@ if (count($routes[$uiAction]["arguments"]) > 0) {
 
     array_merge($routes[$uiAction]["arguments"], $args);
     $args = $routes[$uiAction]["arguments"];
-//    array_unshift($routes[$controller]["arguments"], $args);
 
 }
 

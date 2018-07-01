@@ -5,6 +5,7 @@ namespace Employees\Controllers;
 
 
 use Employees\Models\Binding\Emp\EmpBindingModel;
+use Employees\Models\Binding\Employees\EmployeesBindingModel;
 use Employees\Services\AuthenticationServiceInterface;
 use Employees\Services\EmployeesServiceInterface;
 use Employees\Services\EncryptionServiceInterface;
@@ -32,6 +33,25 @@ class EmployeesController
         $this->authenticationService = $authenticationService;
         $this->binaryImage = $binService;
         $this->dataReturn = $dataReturn;
+    }
+
+    private function binaryImagesSentForUpload(EmpBindingModel $employeeBindingModel, $name)
+    {
+        $binaryImages = [];
+
+        if ($employeeBindingModel->getImage()) {
+            $binaryImages["image_".$name] = $employeeBindingModel->getImage();
+        }
+
+        if ($employeeBindingModel->getAvatar()) {
+            $binaryImages["avatar_".$name] = $employeeBindingModel->getAvatar();
+        }
+
+        if ($employeeBindingModel->getPhoto()) {
+            $binaryImages["photo_".$name] = $employeeBindingModel->getPhoto();
+        }
+
+        return $binaryImages;
     }
 
     public function find($id = null)
@@ -77,36 +97,53 @@ class EmployeesController
 
         if ($this->authenticationService->isTokenCorrect()) {
 
-        $md5string = $this->encryptionService->md5generator($employeeBindingModel->getFirstName().
-            $employeeBindingModel->getLastName().
-            $employeeBindingModel->getBirthday().time());
+            $imageName = strtolower($employeeBindingModel->getFirstName()."_".
+                $employeeBindingModel->getLastName()."_".
+                $this->encryptionService->md5generator(time()));
 
+            $imageDefault = $employeeBindingModel->getGender() == 1 ? "defaultf.png" : "defaultm.png";
+            $ImageNamesContainer = [];
 
-            if ($this->binaryImage->createImage($employeeBindingModel->getImage(), DefaultParam::EmployeeContainer, $md5string, "jpg")) {
-                $this->binaryImage->createImage($employeeBindingModel->getAvatar(),DefaultParam::EmployeeContainer, "av".$md5string, "jpg");
-                $this->binaryImage->createImage($employeeBindingModel->getPhoto(),DefaultParam::EmployeeContainer, "ph".$md5string, "jpg");
-                $employeeBindingModel->setImage($md5string.".jpg");
-                $employeeBindingModel->setAvatar("av".$md5string.".jpg");
-                $employeeBindingModel->setPhoto("ph".$md5string.".jpg");
-                if ($this->employeeService->addEmp($employeeBindingModel, $md5string)) {
-                    $empArrray = $this->employeeService->getEmpByStrId($md5string);
+            $employeePictures = $this->binaryImagesSentForUpload($employeeBindingModel, $imageName);
 
-//                    $updateEmpId = $this->employeeService->updateAddInfoId($md5string, $empArrray["id"]);
-                    $empArrray["image"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$empArrray['image'];
-                    $empArrray["avatar"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$empArrray['avatar'];
-                    $empArrray["photo"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$empArrray['photo'];
-
-                    return $this->dataReturn->jsonData($empArrray);
-
-                } else {
-                    $this->binaryImage->removeImage(DefaultParam::EmployeeContainer.$md5string.".jpg");
-                    $this->binaryImage->removeImage(DefaultParam::EmployeeContainer."av".$md5string.".jpg");
-                    $this->binaryImage->removeImage(DefaultParam::EmployeeContainer."ph".$md5string.".jpg");
-                    return $this->dataReturn->errorResponse(400,"Add new employee failed");
+            if (count($employeePictures)> 0) {
+                if (count($this->binaryImage->checkBinaryData($employeePictures)) != count($employeePictures)) {
+                    return $this->dataReturn->errorResponse(400, "Image upload failed. Please try again.");
                 }
-            } else {
-                    return $this->dataReturn->errorResponse(400, "Image upload failed");
+
+                if (!$this->binaryImage->checkImageType($employeePictures)) {
+                    return $this->dataReturn->errorResponse(400, "Image upload failed. Please use only .jpg, .jpeg or .png formats.");
+                }
+
+                $uploadedImages = $this->binaryImage->createImage($employeePictures, dirname(__DIR__)."\\webroot\\images\\");
+
+                if (count($uploadedImages) != count($employeePictures)) {
+                    $this->binaryImage->removeImage($uploadedImages, dirname(__DIR__)."\\webroot\\images\\");
+                    return $this->dataReturn->errorResponse(400, "Image upload failed. Please try again.");
+                }
+
+                $ImageNamesContainer = $uploadedImages;
+
             }
+
+            $employeeBindingModel->setImage(array_key_exists("image_".$imageName, $ImageNamesContainer) ? $ImageNamesContainer["image_".$imageName] : $imageDefault);
+            $employeeBindingModel->setAvatar(array_key_exists("avatar_".$imageName, $ImageNamesContainer) ? $ImageNamesContainer["avatar_".$imageName] : $imageDefault);
+            $employeeBindingModel->setPhoto(array_key_exists("photo_".$imageName, $ImageNamesContainer) ? $ImageNamesContainer["photo_".$imageName] : $imageDefault);
+
+            try {
+                $lastEmployeeAddedId = $this->employeeService->addEmp($employeeBindingModel);
+                $employeeData = $this->employeeService->getEmp($lastEmployeeAddedId);
+
+                return $this->dataReturn->jsonData($employeeData);
+
+
+            } catch (\Exception $e) {
+                if (count($ImageNamesContainer) > 0 ) {
+                    $this->binaryImage->removeImage($ImageNamesContainer,dirname(__DIR__)."\\webroot\\images\\");
+                }
+                return $this->dataReturn->errorResponse(400,$e->getMessage());
+            }
+
         }
 
         return $this->dataReturn->errorResponse(401);
@@ -126,73 +163,65 @@ class EmployeesController
 
             $empBindingModel->setId($theid);
             $employee = $this->employeeService->getEmp($theid);
-
-            ////////////////////////////// NEED UPDATE////////////////////////////////////////////////////////////////////////////////////////////////////
-            $oldImage = $employee["image"];
-            $oldImageAv = $employee["avatar"];
-            $oldImagePh = $employee["photo"];
-
-
-            $isBinaryImage = preg_match("/^data:image\/(png|jpeg);base64,/", $empBindingModel->getImage()) > 0 ? true : false;
-            $isBinaryAvatar = preg_match("/^data:image\/(png|jpeg);base64,/", $empBindingModel->getAvatar()) > 0 ? true : false;
-            $isBinaryPhoto = preg_match("/^data:image\/(png|jpeg);base64,/", $empBindingModel->getPhoto()) > 0 ? true : false;
-
-            $md5string = $this->encryptionService->md5generator($empBindingModel->getFirstName() .
-                $empBindingModel->getLastName() .
-                $empBindingModel->getBirthday() . time());
-
-            if ($isBinaryImage) {
-                $this->binaryImage->createImage($empBindingModel->getImage(), DefaultParam::EmployeeContainer, $md5string, "jpg");
-                $empBindingModel->setImage($md5string . ".jpg");
-            } else {
-                $empBindingModel->setImage($oldImage);
+            if (!$employee) {
+                return $this->dataReturn->errorResponse(400);
             }
 
-            if ($isBinaryAvatar) {
-                $this->binaryImage->createImage($empBindingModel->getAvatar(), DefaultParam::EmployeeContainer, "av".$md5string, "jpg");
-                $empBindingModel->setAvatar("av".$md5string . ".jpg");
-            } else {
-                $empBindingModel->setAvatar($oldImageAv);
-            }
+            $oldImage = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["image"]);
+            $oldImageAv = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["avatar"]);
+            $oldImagePh = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["photo"]);
 
-            if ($isBinaryPhoto) {
+            $imageName = strtolower($empBindingModel->getFirstName()."_".
+                $empBindingModel->getLastName()."_".
+                $this->encryptionService->md5generator(time()));
 
-                $this->binaryImage->createImage($empBindingModel->getPhoto(), DefaultParam::EmployeeContainer, "ph".$md5string, "jpg");
-                $empBindingModel->setPhoto("ph".$md5string . ".jpg");
-            } else {
-                $empBindingModel->setPhoto($oldImagePh);
-            }
+            $imageForUpdate = $this->binaryImage->checkBinaryData($this->binaryImagesSentForUpload($empBindingModel, $imageName));
 
+            $imageContainer = [];
+            $oldImageToRemove = [];
 
-            if ($this->employeeService->updEmp($empBindingModel)) {
-                if ($isBinaryImage) {
+            if ($imageForUpdate > 0) {
+                if (array_key_exists("image_".$imageName,$imageForUpdate)) $oldImageToRemove[] = $oldImage;
+                if (array_key_exists("avatar_".$imageName,$imageForUpdate)) $oldImageToRemove[] = $oldImageAv;
+                if (array_key_exists("photo_".$imageName,$imageForUpdate)) $oldImageToRemove[] = $oldImagePh;
 
-                    $this->binaryImage->removeImage(DefaultParam::EmployeeContainer . $oldImage);
-                }
-                if ($isBinaryAvatar) {
+                $uploadedImages = $this->binaryImage->createImage($imageForUpdate, dirname(__DIR__)."\\webroot\\images\\");
 
-                    $this->binaryImage->removeImage(DefaultParam::EmployeeContainer . $oldImageAv);
-                }
-                if ($isBinaryPhoto) {
-                    $this->binaryImage->removeImage(DefaultParam::EmployeeContainer . $oldImagePh);
+                if (count($uploadedImages) != count($imageForUpdate)) {
+                    $this->binaryImage->removeImage($uploadedImages, dirname(__DIR__)."\\webroot\\images\\");
+                    return $this->dataReturn->errorResponse(400, "Image upload failed. Please try again.");
                 }
 
-                $updatedEmployee = $this->employeeService->getEmp($empBindingModel->getId());
-
-                $updatedEmployee["image"] = DefaultParam::ServerRoot . DefaultParam::EmployeeContainer . $updatedEmployee["image"];
-                $updatedEmployee["avatar"] = DefaultParam::ServerRoot . DefaultParam::EmployeeContainer . $updatedEmployee["avatar"];
-                $updatedEmployee["photo"] = DefaultParam::ServerRoot . DefaultParam::EmployeeContainer . $updatedEmployee["photo"];
-                //                print_r(json_encode(array("employees" => $updatedEmployee)));
-
-                return $this->dataReturn->jsonData($updatedEmployee);
-
+                $imageContainer = $uploadedImages;
             }
-            return $this->dataReturn->errorResponse(400, "The update was unsuccessful");
+
+
+            $empBindingModel->setImage(array_key_exists("image_".$imageName, $imageContainer) ? $imageContainer["image_".$imageName] : $oldImage);
+            $empBindingModel->setAvatar(array_key_exists("avatar_".$imageName, $imageContainer) ? $imageContainer["avatar_".$imageName] : $oldImageAv);
+            $empBindingModel->setPhoto(array_key_exists("photo_".$imageName, $imageContainer) ? $imageContainer["photo_".$imageName] : $oldImagePh);
+
+            try {
+
+                $this->employeeService->updEmp($empBindingModel);
+
+            } catch (\Exception $e) {
+                if (count($imageContainer) > 0) {
+                    $this->binaryImage->removeImage($imageContainer,dirname(__DIR__)."\\webroot\\images\\");
+                }
+                return $this->dataReturn->errorResponse(400,$e->getMessage());
+            }
+
+            if (count($oldImageToRemove) > 0) {
+                $this->binaryImage->removeImage($oldImageToRemove, dirname(__DIR__)."\\webroot\\images\\");
+            }
+
+
+            return $this->dataReturn->jsonData($this->employeeService->getEmp($empBindingModel->getId()));
 
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return $this->dataReturn->errorResponse(401);
+
+        return $this->dataReturn->errorResponse(401);
     }
 
 }

@@ -22,7 +22,7 @@ class Routes
         "teams"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["teams"]],
         "benefits"=>["controller"=>"benefits", "method"=>"list","arguments"=>[]],
         "feedback"=>["controller"=>"feedback", "method"=>"testGet","arguments"=>[]],
-        "newsletterdownload"=>["controller"=>"newsletters", "method"=>"downloadNewsletter","arguments"=>[]]
+//        "newsletterdownload"=>["controller"=>"newsletters", "method"=>"downloadNewsletter","arguments"=>[]]
     ];
 
     static $POST = [
@@ -50,6 +50,7 @@ class Routes
         "news"=>["controller"=>"news", "method"=>"deletenews","arguments"=>[]],
         "files"=>["controller"=>"files", "method"=>"","arguments"=>[]],
         "feedback"=>["controller"=>"feedback", "method"=>"","arguments"=>[]],
-        "settings"=>["controller"=>"settings", "method"=>"","arguments"=>[]]
+        "settings"=>["controller"=>"settings", "method"=>"","arguments"=>[]],
+        "newsletters"=>["controller"=>"newsletters", "method"=>"remove","arguments"=>[]],
     ];
 }
