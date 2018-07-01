@@ -17,7 +17,9 @@ use Employees\Models\DB\Employee;
 
 class DocumentService implements DocumentServiceInterface
 {
-    const url = DefaultParam::ServerRoot."newsletterdownload/";
+//    const url = DefaultParam::ServerRoot."newsletterdownload/";
+    const url = DefaultParam::ServerRoot."webroot/documents/newsletters/";
+
     private $db;
 
     public function __construct(DatabaseInterface $db)
@@ -69,7 +71,8 @@ class DocumentService implements DocumentServiceInterface
                          description,
                          file_type AS fileType,
                          file_size AS fileSize,
-                         CONCAT('".self::url."',file_name) AS url 
+                         CONCAT('".self::url."',file_name) AS url,
+                         file_name AS name 
                           FROM document_files WHERE id = ?";
 
         $stmt = $this->db->prepare($query);
@@ -129,6 +132,12 @@ class DocumentService implements DocumentServiceInterface
     public function remove($documentId)
     {
         // TODO: Implement remove() method.
+
+        $query = "DELETE FROM document_files WHERE id = ?";
+
+        $stmt = $this->db->prepare($query);
+
+        return $stmt->execute([$documentId]);
     }
 
 
