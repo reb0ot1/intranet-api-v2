@@ -19,9 +19,12 @@ interface NewsServiceInterface
 
     public function getNewsByStrId($uniqueStr) : array ;
 
-    public function addNews(NewsBindingModel $newsBindingModel, $uniqueStr) : bool;
+    public function addNews(NewsBindingModel $newsBindingModel, $uniqueStr);
 
     public function updateNews(NewsBindingModel $bindingModel) : bool;
 
     public function removeNews($id);
+
+    public function getEmailBodyForArticleCreation();
+
 }

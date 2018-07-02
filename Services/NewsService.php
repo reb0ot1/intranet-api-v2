@@ -10,7 +10,7 @@ namespace Employees\Services;
 
 use Employees\Adapter\DatabaseInterface;
 use Employees\Models\Binding\News\NewsBindingModel;
-
+use Employees\Models\DB\Email;
 
 
 class NewsService implements NewsServiceInterface
@@ -82,7 +82,7 @@ class NewsService implements NewsServiceInterface
         return $result;
     }
 
-    public function addNews(NewsBindingModel $newsBindingModel, $uniqueStr) : bool
+    public function addNews(NewsBindingModel $newsBindingModel, $uniqueStr)
     {
 
         $query = "INSERT INTO 
@@ -98,8 +98,7 @@ class NewsService implements NewsServiceInterface
                   VALUES (?,?,?,?,?,?,?)";
 
         $stmt = $this->db->prepare($query);
-
-        return $stmt->execute([
+        $result = $stmt->execute([
             $newsBindingModel->getAdminId(),
             "yes",
             $newsBindingModel->getDate(),
@@ -109,6 +108,8 @@ class NewsService implements NewsServiceInterface
 //            $newsBindingModel->getBody(),
             $uniqueStr
         ]);
+
+        return $this->db->lastInsertId();
     }
 
     public function updateNews(NewsBindingModel $bindingModel) : bool
@@ -144,5 +145,26 @@ class NewsService implements NewsServiceInterface
         return $stmt->execute(["no",$id]);
     }
 
+
+    public function getEmailBodyForArticleCreation()
+    {
+        $query = "SELECT 
+                  email_types.subject, 
+                  email_types.body, 
+                  email_types.alt_body AS altBody, 
+                  email_types.signature 
+                  FROM email_contents 
+                  INNER JOIN email_types 
+                  ON email_contents.id = email_types.email_content_id 
+                  WHERE email_contents.name = ?";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute(["New article creation"]);
+
+        $result = $stmt->fetchObject(Email::class);
+
+        return $result;
+    }
 
 }

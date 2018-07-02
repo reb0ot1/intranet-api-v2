@@ -6,7 +6,11 @@ namespace Employees\Controllers;
 
 use Employees\Models\Binding\Emp\EmpBindingModel;
 use Employees\Models\Binding\Employees\EmployeesBindingModel;
+use Employees\Models\DB\Email;
+use Employees\Models\DB\Employee;
 use Employees\Services\AuthenticationServiceInterface;
+use Employees\Services\EmailService;
+use Employees\Services\EmployeesService;
 use Employees\Services\EmployeesServiceInterface;
 use Employees\Services\EncryptionServiceInterface;
 use Employees\Services\ImageFromBinServiceInterface;
@@ -35,28 +39,12 @@ class EmployeesController
         $this->dataReturn = $dataReturn;
     }
 
-    private function binaryImagesSentForUpload(EmpBindingModel $employeeBindingModel, $name)
-    {
-        $binaryImages = [];
 
-        if ($employeeBindingModel->getImage()) {
-            $binaryImages["image_".$name] = $employeeBindingModel->getImage();
-        }
 
-        if ($employeeBindingModel->getAvatar()) {
-            $binaryImages["avatar_".$name] = $employeeBindingModel->getAvatar();
-        }
-
-        if ($employeeBindingModel->getPhoto()) {
-            $binaryImages["photo_".$name] = $employeeBindingModel->getPhoto();
-        }
-
-        return $binaryImages;
-    }
 
     public function find($id = null)
     {
-                $list =  $this->employeeService->getListStatus("yes", $id);
+        $list =  $this->employeeService->getListStatus("yes", $id);
 
         if (is_array($list)) {
 
@@ -133,6 +121,10 @@ class EmployeesController
             try {
                 $lastEmployeeAddedId = $this->employeeService->addEmp($employeeBindingModel);
                 $employeeData = $this->employeeService->getEmp($lastEmployeeAddedId);
+
+                $email = new EmailService();
+
+                $email->sendEmail($this->emailEmployeePreparation($lastEmployeeAddedId));
 
                 return $this->dataReturn->jsonData($employeeData);
 
@@ -223,5 +215,48 @@ class EmployeesController
 
         return $this->dataReturn->errorResponse(401);
     }
+
+
+    private function binaryImagesSentForUpload(EmpBindingModel $employeeBindingModel, $name)
+    {
+        $binaryImages = [];
+
+        if ($employeeBindingModel->getImage()) {
+            $binaryImages["image_" . $name] = $employeeBindingModel->getImage();
+        }
+
+        if ($employeeBindingModel->getAvatar()) {
+            $binaryImages["avatar_" . $name] = $employeeBindingModel->getAvatar();
+        }
+
+        if ($employeeBindingModel->getPhoto()) {
+            $binaryImages["photo_" . $name] = $employeeBindingModel->getPhoto();
+        }
+
+        return $binaryImages;
+    }
+
+    /**
+     * @param  $newEmployeeId
+     * @return \Employees\Models\DB\Email $email
+     */
+    private function emailEmployeePreparation($newEmployeeId)
+    {
+        $url = "http://localhost:4200/employees/employee/".$newEmployeeId;
+        /**
+         * @var \Employees\Models\DB\Email $email
+         */
+        $email =  $this->employeeService->getEmailBodyForEmployeeCreation();
+
+        $body = str_replace("%employee_link%", $url, $email->getBody());
+        $altBody = str_replace("%employee_link%", $url, $email->getAltBody());
+
+        $email->setBody($body);
+        $email->setAltBody($altBody);
+        $email->setIsHTML(true);
+
+        return $email;
+    }
+
 
 }

@@ -18,4 +18,6 @@ interface DocumentServiceInterface
     public function add($documentBindingModel);
 
     public function remove($documentId);
+
+    public function getEmailBodyForNewsletter();
 }

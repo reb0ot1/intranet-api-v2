@@ -11,5 +11,5 @@ namespace Employees\Services;
 
 interface EmailServiceInterface
 {
-    public function sendEmail();
+    public function sendEmail($email);
 }

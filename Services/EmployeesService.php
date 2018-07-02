@@ -12,6 +12,7 @@ namespace Employees\Services;
 use Employees\Adapter\DatabaseInterface;
 use Employees\Models\Binding\Emp\EmpBindingModel;
 use Employees\Config\DefaultParam;
+use Employees\Models\DB\Email;
 use Employees\Models\DB\Employee;
 
 
@@ -304,6 +305,27 @@ class EmployeesService implements EmployeesServiceInterface
         $stmt = $this->db->prepare($query);
 
         return $stmt->execute(["no",$empId]);
+    }
+
+    public function getEmailBodyForEmployeeCreation()
+    {
+        $query = "SELECT 
+                  email_types.subject, 
+                  email_types.body, 
+                  email_types.alt_body AS altBody, 
+                  email_types.signature 
+                  FROM email_contents 
+                  INNER JOIN email_types 
+                  ON email_contents.id = email_types.email_content_id 
+                  WHERE email_contents.name = ?";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute(["New employee registration"]);
+
+        $result = $stmt->fetchObject(Email::class);
+
+        return $result;
     }
 
 

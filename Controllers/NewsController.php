@@ -12,11 +12,13 @@ namespace Employees\Controllers;
 use Employees\Core\DataReturnInterface;
 use Employees\Models\Binding\News\NewsBindingModel;
 use Employees\Services\AuthenticationServiceInterface;
+use Employees\Services\EmailService;
 use Employees\Services\EmailServiceInterface;
 use Employees\Services\EncryptionServiceInterface;
 use Employees\Services\ImageFromBinServiceInterface;
 use Employees\Services\NewsServiceInterface;
 use Employees\Config\DefaultParam;
+use Employees\Vendor\phpmailer\src\Exception;
 
 class NewsController
 {
@@ -45,11 +47,6 @@ class NewsController
     public function getNews()
     {
 
-        $emailSend = $this->emailService->sendEmail();
-
-        var_dump($emailSend);
-        exit;
-
         $list = $this->newsService->getAllNews("yes");
 
         if (is_array($list)) {
@@ -73,34 +70,24 @@ class NewsController
         if ($this->authenticationService->isTokenCorrect()) {
 
             $author = $this->authenticationService->getUserInfo();
-            $now = date("d/m/y");
 
-//            $bindingModel->setDate($now);
-            //$bindingModel->setAuthor($author["first"] . " " . $author["last"]);
             $bindingModel->setAdminId($author["id"]);
 
             $md5string = $this->encryptionService->md5generator(time() . $bindingModel->getTitle() . $bindingModel->getBody());
 
-//            if ($this->binaryImage->createImage($bindingModel->getImage(), DefaultParam::NewsImageContainer, $md5string, "png")) {
-//
-//                $bindingModel->setImage($md5string . ".png");
+            try {
+                $newArticleId = $this->newsService->addNews($bindingModel, $md5string);
+                $article = $this->newsService->getNews($newArticleId);
 
-            if ($this->newsService->addNews($bindingModel, $md5string)) {
-                $newsList = $this->newsService->getNewsByStrId($md5string);
-//                $newsList["image"] = DefaultParam::ServerRoot . DefaultParam::NewsImageContainer . $newsList['image'];
-                return $this->dataReturn->jsonData($newsList);
+                $email = new EmailService();
 
-            } else {
+                $email->sendEmail($this->emailNewArticlePreparation($newArticleId));
 
-//                $this->binaryImage->removeImage(DefaultParam::NewsImageContainer . $md5string . ".png");
+                return $this->dataReturn->jsonData($article);
 
-                return $this->dataReturn->errorResponse(400, "Add news failed");
+            } catch (Exception $e) {
+                return $this->dataReturn->errorResponse(400, $e->getMessage());
             }
-//            } else {
-//
-//
-//                return $this->dataReturn->errorResponse(400, "Image upload failed");
-//            }
         }
 
         return $this->dataReturn->errorResponse(401);
@@ -109,41 +96,17 @@ class NewsController
     public function updateNews($theId,NewsBindingModel $bindingModel)
     {
 
-
-//        $str = '{"errors":[{"status": "404","title": "sklfksdkljfklsdf": "Cannot POST /posts"}]}';
-//        http_response_code("304");
-//        //print_r($str);
-//        exit;
         if ($this->authenticationService->isTokenCorrect()) {
 
             $bindingModel->setId($theId);
 
-//            var_dump($bindingModel->getDate());
-//            $updatedDate = strtotime("+1 day", strtotime($bindingModel->getDate()));
-//            $bindingModel->setDate(date("Y-m-d", $updatedDate));
-//            $news = $this->newsService->getNews($theId);
-
-//            $oldImage = $news["image"];
-//
-//            $isBinaryImage = preg_match("/^data:image\/(png|jpeg);base64,/", $bindingModel->getImage()) > 0 ? true : false;
-
-//            if ($isBinaryImage) {
 
                 $md5string = $this->encryptionService->md5generator(time() . $bindingModel->getTitle());
 
-//                $this->binaryImage->createImage($bindingModel->getImage(), DefaultParam::NewsImageContainer, $md5string, "png");
-//                $bindingModel->setImage($md5string . ".png");
-//            } else {
-//                $bindingModel->setImage($oldImage);
-//            }
 
             if ($this->newsService->updateNews($bindingModel)) {
 
-//                if ($isBinaryImage) {
-//                    $this->binaryImage->removeImage(DefaultParam::NewsImageContainer . $oldImage);
-//                }
                 $updatedNews = $this->newsService->getNews($bindingModel->getId());
-               // $updatedNews["image"] = DefaultParam::ServerRoot . DefaultParam::NewsImageContainer . $updatedNews["image"];
                 return $this->dataReturn->jsonData($updatedNews);
             }
 
@@ -169,9 +132,22 @@ class NewsController
         return $this->dataReturn->errorResponse(401);
     }
 
-    public function uploadImage()
+    private function emailNewArticlePreparation($articleId)
     {
-        var_dump($_FILES);
+        $url = "http://localhost:4200/articles/article/".$articleId;
+        /**
+         * @var \Employees\Models\DB\Email $email
+         */
+        $email =  $this->newsService->getEmailBodyForArticleCreation();
+
+        $body = str_replace("%article_link%", $url, $email->getBody());
+        $altBody = str_replace("%article_link%", $url, $email->getAltBody());
+
+        $email->setBody($body);
+        $email->setAltBody($altBody);
+        $email->setIsHTML(true);
+
+        return $email;
     }
 
 }

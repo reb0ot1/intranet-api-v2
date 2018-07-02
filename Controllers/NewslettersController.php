@@ -19,6 +19,7 @@ use Employees\Services\AuthenticationServiceInterface;
 use Employees\Services\DocumentCategoriesServiceInterface;
 use Employees\Services\DocumentCategoryService;
 use Employees\Services\DocumentServiceInterface;
+use Employees\Services\EmailService;
 use Employees\Services\EncryptionServiceInterface;
 
 
@@ -95,6 +96,10 @@ class NewslettersController
 
                 $documentId = $this->documentService->add($documentBindingModel);
 
+                $email = new EmailService();
+
+                $email->sendEmail($this->emailNewsletterPreparation($documentId));
+
                 return $this->dataReturn->jsonData($this->documentService->findOne($documentId));
 
             } catch (\Exception $e) {
@@ -146,6 +151,25 @@ class NewslettersController
         }
 
         return $this->dataReturn->errorResponse(400,"The newsletter was not removed. Please try again");
+    }
+
+    private function emailNewsletterPreparation($articleId)
+    {
+        $url = "http://localhost:4200/hr-folder/hr-newsletter";
+
+        /**
+         * @var \Employees\Models\DB\Email $email
+         */
+        $email =  $this->documentService->getEmailBodyForNewsletter();
+
+        $body = str_replace("%newsletter_link%", $url, $email->getBody());
+        $altBody = str_replace("%newsletter_link%", $url, $email->getAltBody());
+
+        $email->setBody($body);
+        $email->setAltBody($altBody);
+        $email->setIsHTML(true);
+
+        return $email;
     }
 
 }

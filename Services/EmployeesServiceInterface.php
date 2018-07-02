@@ -29,4 +29,6 @@ interface EmployeesServiceInterface
 
     public function removeEmp($empId) : bool;
 
+    public function getEmailBodyForEmployeeCreation();
+
 }

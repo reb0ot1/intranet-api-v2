@@ -13,6 +13,7 @@ use Employees\Adapter\DatabaseInterface;
 use Employees\Config\DefaultParam;
 use Employees\Models\Binding\Document\DocumentBindingModel;
 use Employees\Models\DB\Document;
+use Employees\Models\DB\Email;
 use Employees\Models\DB\Employee;
 
 class DocumentService implements DocumentServiceInterface
@@ -140,6 +141,25 @@ class DocumentService implements DocumentServiceInterface
         return $stmt->execute([$documentId]);
     }
 
+    public function getEmailBodyForNewsletter()
+    {
+        $query = "SELECT 
+                  email_types.subject, 
+                  email_types.body, 
+                  email_types.alt_body AS altBody, 
+                  email_types.signature 
+                  FROM email_contents 
+                  INNER JOIN email_types 
+                  ON email_contents.id = email_types.email_content_id 
+                  WHERE email_contents.name = ?";
 
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute(["New newsletter creation"]);
+
+        $result = $stmt->fetchObject(Email::class);
+
+        return $result;
+    }
 
 }
