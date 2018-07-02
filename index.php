@@ -3,6 +3,7 @@
 use Employees\Adapter\Database;
 use Employees\Config\DbConfig;
 use Employees\Config\DefaultParam;
+use Employees\Vendor\phpmailer\src\PHPMailer;
 
 
 header('Access-Control-Allow-Origin: *');
@@ -42,6 +43,7 @@ $args = explode("/",$uri);
 if (count($args) == 0) {
     exit;
 }
+
 
 $keyHolds = "";
 
@@ -229,6 +231,10 @@ $app->registerDependency(\Employees\Services\DocumentServiceInterface::class,
 );
 $app->registerDependency(\Employees\Services\DocumentCategoriesServiceInterface::class,
     \Employees\Services\DocumentCategoryService::class
+);
+
+$app->registerDependency(\Employees\Services\EmailServiceInterface::class,
+    \Employees\Services\EmailService::class
 );
 
 

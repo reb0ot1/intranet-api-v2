@@ -12,6 +12,7 @@ namespace Employees\Controllers;
 use Employees\Core\DataReturnInterface;
 use Employees\Models\Binding\News\NewsBindingModel;
 use Employees\Services\AuthenticationServiceInterface;
+use Employees\Services\EmailServiceInterface;
 use Employees\Services\EncryptionServiceInterface;
 use Employees\Services\ImageFromBinServiceInterface;
 use Employees\Services\NewsServiceInterface;
@@ -24,22 +25,30 @@ class NewsController
     private $authenticationService;
     private $binaryImage;
     private $dataReturn;
+    private $emailService;
 
     public function __construct(NewsServiceInterface $newsService,
                                 EncryptionServiceInterface $encryptionService,
                                 AuthenticationServiceInterface $authenticationService,
                                 ImageFromBinServiceInterface $imageFromBinService,
+                                EmailServiceInterface $emailService,
                                 DataReturnInterface $dataReturn)
     {
         $this->newsService = $newsService;
         $this->encryptionService = $encryptionService;
         $this->authenticationService = $authenticationService;
         $this->binaryImage = $imageFromBinService;
+        $this->emailService = $emailService;
         $this->dataReturn = $dataReturn;
     }
 
     public function getNews()
     {
+
+        $emailSend = $this->emailService->sendEmail();
+
+        var_dump($emailSend);
+        exit;
 
         $list = $this->newsService->getAllNews("yes");
 
