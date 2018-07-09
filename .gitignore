@@ -1,3 +1,4 @@
 /webroot/*
 /.idea/*
-/Config/*
+/Config/DbConfig.php
+/Config/EmailConfig.php

@@ -134,7 +134,7 @@ class NewsController
 
     private function emailNewArticlePreparation($articleId)
     {
-        $url = "http://localhost:4200/articles/article/".$articleId;
+        $url = DefaultParam::UIRoot."articles/article/".$articleId;
         /**
          * @var \Employees\Models\DB\Email $email
          */

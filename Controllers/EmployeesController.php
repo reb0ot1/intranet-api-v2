@@ -242,7 +242,7 @@ class EmployeesController
      */
     private function emailEmployeePreparation($newEmployeeId)
     {
-        $url = "http://localhost:4200/employees/employee/".$newEmployeeId;
+        $url = DefaultParam::UIRoot."employees/employee/".$newEmployeeId;
         /**
          * @var \Employees\Models\DB\Email $email
          */
