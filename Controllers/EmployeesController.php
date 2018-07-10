@@ -19,7 +19,7 @@ use Employees\Core\DataReturnInterface;
 
 class EmployeesController
 {
-
+    private $employeeImageFolder;
     private $employeeService;
     private $encryptionService;
     private $authenticationService;
@@ -37,6 +37,7 @@ class EmployeesController
         $this->authenticationService = $authenticationService;
         $this->binaryImage = $binService;
         $this->dataReturn = $dataReturn;
+        $this->employeeImageFolder = dirname(__DIR__)."\\".str_replace("/","\\", DefaultParam::EmployeeContainer);
     }
 
 
@@ -89,7 +90,7 @@ class EmployeesController
                 $employeeBindingModel->getLastName()."_".
                 $this->encryptionService->md5generator(time()));
 
-            $imageDefault = $employeeBindingModel->getGender() == 1 ? "defaultf.png" : "defaultm.png";
+            $imageDefault = $employeeBindingModel->getGender() == 1 ? DefaultParam::EmployeeDefaultFemaleImage : DefaultParam::EmployeeDefaultMaleImage;
             $ImageNamesContainer = [];
 
             $employeePictures = $this->binaryImagesSentForUpload($employeeBindingModel, $imageName);
@@ -103,10 +104,10 @@ class EmployeesController
                     return $this->dataReturn->errorResponse(400, "Image upload failed. Please use only .jpg, .jpeg or .png formats.");
                 }
 
-                $uploadedImages = $this->binaryImage->createImage($employeePictures, dirname(__DIR__)."\\webroot\\images\\");
+                $uploadedImages = $this->binaryImage->createImage($employeePictures, $this->employeeImageFolder);
 
                 if (count($uploadedImages) != count($employeePictures)) {
-                    $this->binaryImage->removeImage($uploadedImages, dirname(__DIR__)."\\webroot\\images\\");
+                    $this->binaryImage->removeImage($uploadedImages, $this->employeeImageFolder);
                     return $this->dataReturn->errorResponse(400, "Image upload failed. Please try again.");
                 }
 
@@ -131,7 +132,9 @@ class EmployeesController
 
             } catch (\Exception $e) {
                 if (count($ImageNamesContainer) > 0 ) {
-                    $this->binaryImage->removeImage($ImageNamesContainer,dirname(__DIR__)."\\webroot\\images\\");
+
+                    $this->binaryImage->removeImage($ImageNamesContainer,$this->employeeImageFolder);
+
                 }
                 return $this->dataReturn->errorResponse(400,$e->getMessage());
             }
@@ -159,9 +162,9 @@ class EmployeesController
                 return $this->dataReturn->errorResponse(400);
             }
 
-            $oldImage = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["image"]);
-            $oldImageAv = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["avatar"]);
-            $oldImagePh = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["photo"]);
+            $currentImage = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["image"]);
+            $currentImageAv = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["avatar"]);
+            $currentImagePh = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["photo"]);
 
             $imageName = strtolower($empBindingModel->getFirstName()."_".
                 $empBindingModel->getLastName()."_".
@@ -169,42 +172,56 @@ class EmployeesController
 
             $imageForUpdate = $this->binaryImage->checkBinaryData($this->binaryImagesSentForUpload($empBindingModel, $imageName));
 
-            $imageContainer = [];
+            $empBindingModel->setImage($currentImage);
+            $empBindingModel->setAvatar($currentImageAv);
+            $empBindingModel->setPhoto($currentImagePh);
+
             $oldImageToRemove = [];
 
             if ($imageForUpdate > 0) {
-                if (array_key_exists("image_".$imageName,$imageForUpdate)) $oldImageToRemove[] = $oldImage;
-                if (array_key_exists("avatar_".$imageName,$imageForUpdate)) $oldImageToRemove[] = $oldImageAv;
-                if (array_key_exists("photo_".$imageName,$imageForUpdate)) $oldImageToRemove[] = $oldImagePh;
 
-                $uploadedImages = $this->binaryImage->createImage($imageForUpdate, dirname(__DIR__)."\\webroot\\images\\");
+                $uploadedImages = $this->binaryImage->createImage($imageForUpdate, $this->employeeImageFolder);
 
                 if (count($uploadedImages) != count($imageForUpdate)) {
-                    $this->binaryImage->removeImage($uploadedImages, dirname(__DIR__)."\\webroot\\images\\");
+                    $this->binaryImage->removeImage($uploadedImages, $this->employeeImageFolder);
                     return $this->dataReturn->errorResponse(400, "Image upload failed. Please try again.");
                 }
 
-                $imageContainer = $uploadedImages;
+            }
+            if (array_key_exists("image_".$imageName, $uploadedImages)) {
+                $empBindingModel->setImage($uploadedImages["image_".$imageName]);
+                if ($currentImage != DefaultParam::EmployeeDefaultMaleImage && $currentImage != DefaultParam::EmployeeDefaultFemaleImage){
+                    $oldImageToRemove[] = $currentImage;
+                }
             }
 
+            if (array_key_exists("avatar_".$imageName, $uploadedImages)) {
+                $empBindingModel->setAvatar($uploadedImages["avatar_".$imageName]);
+                if ($currentImageAv != DefaultParam::EmployeeDefaultMaleImage && $currentImageAv != DefaultParam::EmployeeDefaultFemaleImage){
+                    $oldImageToRemove[] = $currentImageAv;
+                }
+            }
 
-            $empBindingModel->setImage(array_key_exists("image_".$imageName, $imageContainer) ? $imageContainer["image_".$imageName] : $oldImage);
-            $empBindingModel->setAvatar(array_key_exists("avatar_".$imageName, $imageContainer) ? $imageContainer["avatar_".$imageName] : $oldImageAv);
-            $empBindingModel->setPhoto(array_key_exists("photo_".$imageName, $imageContainer) ? $imageContainer["photo_".$imageName] : $oldImagePh);
+            if (array_key_exists("photo_".$imageName, $uploadedImages)) {
+                $empBindingModel->setPhoto($uploadedImages["photo_".$imageName]);
+                if ($currentImagePh != DefaultParam::EmployeeDefaultMaleImage && $currentImagePh != DefaultParam::EmployeeDefaultFemaleImage){
+                    $oldImageToRemove[] = $currentImagePh;
+                }
+            }
 
             try {
 
                 $this->employeeService->updEmp($empBindingModel);
-
+    
             } catch (\Exception $e) {
-                if (count($imageContainer) > 0) {
-                    $this->binaryImage->removeImage($imageContainer,dirname(__DIR__)."\\webroot\\images\\");
+                if (count($uploadedImages) > 0) {
+                    $this->binaryImage->removeImage($uploadedImages,$this->employeeImageFolder);
                 }
                 return $this->dataReturn->errorResponse(400,$e->getMessage());
             }
 
             if (count($oldImageToRemove) > 0) {
-                $this->binaryImage->removeImage($oldImageToRemove, dirname(__DIR__)."\\webroot\\images\\");
+                $this->binaryImage->removeImage($oldImageToRemove, $this->employeeImageFolder);
             }
 
 

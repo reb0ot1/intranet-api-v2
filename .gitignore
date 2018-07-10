@@ -1,4 +1,6 @@
-/webroot/*
+/webroot/employees/*
+/webroot/files/*
+/webroot/news/*
 /.idea/*
 /Config/DbConfig.php
 /Config/EmailConfig.php

@@ -1,0 +1,54 @@
+[11-Feb-2018 18:31:55 Europe/Sofia] PHP Warning:  move_uploaded_file(/webroot/testNews1518366712610.jpg): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 19
+[11-Feb-2018 18:31:55 Europe/Sofia] PHP Warning:  move_uploaded_file(): Unable to move '/tmp/phpEJoAp8' to '/webroot/testNews1518366712610.jpg' in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 19
+[11-Feb-2018 18:32:34 Europe/Sofia] PHP Warning:  move_uploaded_file(/webroot/testNews/1518366751609.jpg): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 19
+[11-Feb-2018 18:32:34 Europe/Sofia] PHP Warning:  move_uploaded_file(): Unable to move '/tmp/phpa9uqDv' to '/webroot/testNews/1518366751609.jpg' in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 19
+[11-Feb-2018 19:14:30 Europe/Sofia] PHP Warning:  move_uploaded_file(/testNews/1518369266997.jpg): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 19
+[11-Feb-2018 19:14:30 Europe/Sofia] PHP Warning:  move_uploaded_file(): Unable to move '/tmp/phpuP9C0Q' to '/testNews/1518369266997.jpg' in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 19
+[11-Feb-2018 19:17:56 Europe/Sofia] PHP Warning:  move_uploaded_file(/testNews/1518369473768.jpg): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 20
+[11-Feb-2018 19:17:56 Europe/Sofia] PHP Warning:  move_uploaded_file(): Unable to move '/tmp/php8QGp3P' to '/testNews/1518369473768.jpg' in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 20
+[11-Feb-2018 19:21:02 Europe/Sofia] PHP Warning:  move_uploaded_file(/testNews/1518369659425.jpg): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 21
+[11-Feb-2018 19:21:02 Europe/Sofia] PHP Warning:  move_uploaded_file(): Unable to move '/tmp/phpz4CaRi' to '/testNews/1518369659425.jpg' in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 21
+[11-Feb-2018 19:23:12 Europe/Sofia] PHP Warning:  move_uploaded_file(/testnews/1518369774435.jpg): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 21
+[11-Feb-2018 19:23:12 Europe/Sofia] PHP Warning:  move_uploaded_file(): Unable to move '/tmp/phpjaWx1J' to '/testnews/1518369774435.jpg' in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 21
+[11-Feb-2018 19:25:30 Europe/Sofia] PHP Warning:  move_uploaded_file(/testnews/1518369926042.jpg): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 21
+[11-Feb-2018 19:25:30 Europe/Sofia] PHP Warning:  move_uploaded_file(): Unable to move '/tmp/phpxZsMuv' to '/testnews/1518369926042.jpg' in /home/q1q1eu2x/public_html/employees/webroot/testimagenews.php on line 21
+[18-Apr-2018 10:46:41 Europe/Sofia] PHP Warning:  require_once(Mail.php): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 4
+[18-Apr-2018 10:46:41 Europe/Sofia] PHP Fatal error:  require_once(): Failed opening required 'Mail.php' (include_path='.:/usr/local/php7.1/lib/php') in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 4
+[18-Apr-2018 10:47:23 Europe/Sofia] PHP Warning:  require_once(Mail.php): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 4
+[18-Apr-2018 10:47:23 Europe/Sofia] PHP Fatal error:  require_once(): Failed opening required 'Mail.php' (include_path='.:/usr/local/php7.1/lib/php') in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 4
+[18-Apr-2018 10:57:01 Europe/Sofia] PHP Warning:  require_once(home/q1q1eu2x/php/Mail.php): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 4
+[18-Apr-2018 10:57:01 Europe/Sofia] PHP Fatal error:  require_once(): Failed opening required 'home/q1q1eu2x/php/Mail.php' (include_path='.:/usr/local/php7.1/lib/php') in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 4
+[18-Apr-2018 10:59:08 Europe/Sofia] PHP Warning:  require_once(PEAR.php): failed to open stream: No such file or directory in /home/q1q1eu2x/php/Mail.php on line 48
+[18-Apr-2018 10:59:08 Europe/Sofia] PHP Fatal error:  require_once(): Failed opening required 'PEAR.php' (include_path='/home/q1q1eu2x/php:') in /home/q1q1eu2x/php/Mail.php on line 48
+[18-Apr-2018 10:59:48 Europe/Sofia] PHP Warning:  include(Mail.php): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 4
+[18-Apr-2018 10:59:48 Europe/Sofia] PHP Warning:  include(): Failed opening 'Mail.php' for inclusion (include_path='/home/q1q1eu2x/php/bin') in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 4
+[18-Apr-2018 11:02:37 Europe/Sofia] PHP Fatal error:  Uncaught Error: Class 'Mail' not found in /home/q1q1eu2x/public_html/employees/webroot/test.php:5
+Stack trace:
+#0 {main}
+  thrown in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 5
+[18-Apr-2018 11:04:51 Europe/Sofia] PHP Warning:  require_once(PEAR.php): failed to open stream: No such file or directory in /home/q1q1eu2x/php/Mail.php on line 48
+[18-Apr-2018 11:04:51 Europe/Sofia] PHP Fatal error:  require_once(): Failed opening required 'PEAR.php' (include_path='/home/q1q1eu2x/php/Mail.php') in /home/q1q1eu2x/php/Mail.php on line 48
+[18-Apr-2018 11:09:39 Europe/Sofia] PHP Warning:  require(.:/usr/local/php7.1/lib/php/Mail.php): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 7
+[18-Apr-2018 11:09:39 Europe/Sofia] PHP Fatal error:  require(): Failed opening required '.:/usr/local/php7.1/lib/php/Mail.php' (include_path='.:/usr/local/php7.1/lib/php') in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 7
+[18-Apr-2018 15:03:53 Europe/Sofia] PHP Fatal error:  Uncaught Error: Class 'Mail' not found in /home/q1q1eu2x/public_html/employees/webroot/test.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 8
+[18-Apr-2018 17:20:55 Europe/Sofia] PHP Fatal error:  Uncaught Error: Class 'Mail_Mime' not found in /home/q1q1eu2x/public_html/employees/webroot/test.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 18
+[18-Apr-2018 17:21:57 Europe/Sofia] PHP Warning:  include_once(Mail/mime.php): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 8
+[18-Apr-2018 17:21:57 Europe/Sofia] PHP Warning:  include_once(): Failed opening 'Mail/mime.php' for inclusion (include_path='/home/q1q1eu2x/php:.:/usr/local/php7.1/lib/php') in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 8
+[18-Apr-2018 17:21:57 Europe/Sofia] PHP Fatal error:  Uncaught Error: Class 'Mail_Mime' not found in /home/q1q1eu2x/public_html/employees/webroot/test.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 19
+[20-Apr-2018 00:24:11 Europe/Sofia] PHP Warning:  require_once(PEAR.php): failed to open stream: No such file or directory in /home/q1q1eu2x/php/Mail.php on line 48
+[20-Apr-2018 00:24:11 Europe/Sofia] PHP Fatal error:  require_once(): Failed opening required 'PEAR.php' (include_path='/home/q1q1eu2x/php/Mail.php') in /home/q1q1eu2x/php/Mail.php on line 48
+[20-Apr-2018 00:24:34 Europe/Sofia] PHP Warning:  include_once(Mail/mime.php): failed to open stream: No such file or directory in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 8
+[20-Apr-2018 00:24:34 Europe/Sofia] PHP Warning:  include_once(): Failed opening 'Mail/mime.php' for inclusion (include_path='/home/q1q1eu2x/php:.:/usr/local/php7.1/lib/php') in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 8
+[20-Apr-2018 00:24:34 Europe/Sofia] PHP Fatal error:  Uncaught Error: Class 'Mail_Mime' not found in /home/q1q1eu2x/public_html/employees/webroot/test.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/q1q1eu2x/public_html/employees/webroot/test.php on line 20
