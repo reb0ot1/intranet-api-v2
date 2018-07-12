@@ -17,4 +17,8 @@ interface SettingsDataServiceInterface
 
     public function teams();
 
+    public function educations();
+
+    public function hobbies();
+
 }

@@ -19,6 +19,8 @@ class Routes
         "newsletters"=>["controller"=>"newsletters", "method"=>"findall","arguments"=>[]],
         "companies"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["companies"]],
         "positions"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["positions"]],
+        "educations"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["educations"]],
+        "hobbies"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["hobbies"]],
         "teams"=>["controller"=>"settings", "method"=>"getDropDownOptions","arguments"=>["teams"]],
         "benefits"=>["controller"=>"benefits", "method"=>"list","arguments"=>[]],
         "feedback"=>["controller"=>"feedback", "method"=>"testGet","arguments"=>[]],

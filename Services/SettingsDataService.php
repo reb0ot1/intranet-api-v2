@@ -68,4 +68,36 @@ class SettingsDataService implements SettingsDataServiceInterface
         }
 
     }
+
+    public function educations()
+    {
+        $query = "SELECT * FROM education_groups ORDER BY id ASC" ;
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute();
+
+//        var_dump($stmt->fetchAll());
+
+        while ($result = $stmt->fetchObject(Dropdown::class)) {
+            yield $result;
+        }
+    }
+
+    public function hobbies()
+    {
+        $query = "SELECT * FROM hobbie_groups ORDER BY id ASC" ;
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute();
+
+//        var_dump($stmt->fetchAll());
+
+        while ($result = $stmt->fetchObject(Dropdown::class)) {
+            yield $result;
+        }
+    }
+
+
 }
