@@ -312,7 +312,6 @@ class EmployeesService implements EmployeesServiceInterface
     {
         $this->db->beginTransaction();
         $placeHolders = $this->createPlaceholders(count($groups));
-        var_dump($placeHolders);
         $values = $groups;
         array_push($values, $employeeId);
 

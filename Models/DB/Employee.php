@@ -459,7 +459,7 @@ class Employee implements \JsonSerializable
         $gettable_attributes = array();
         foreach ($getter_names as $key => $value) {
             if(substr($value, 0, 3) === 'get') {
-                $gettable_attributes[substr($value, 3, strlen($value))] = $this->$value();
+                $gettable_attributes[lcfirst(substr($value, 3, strlen($value)))] = $this->$value();
             }
         }
         return $gettable_attributes;

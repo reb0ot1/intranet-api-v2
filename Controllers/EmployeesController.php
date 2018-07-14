@@ -69,14 +69,13 @@ class EmployeesController
 
     public function addemployee(EmpBindingModel $employeeBindingModel)
     {
-
 //        if ($this->authenticationService->isTokenCorrect()) {
         if (true) {
             if (!$this->checkEducationGroupExists($employeeBindingModel->getEducationGroups())) {
                 return $this->dataReturn->errorResponse(400, "The sent data is not correct.");
             }
 
-            if (!$this->checkHobbyGroupExists($employeeBindingModel->getHobbiesGroups())) {
+            if (!$this->checkHobbyGroupExists($employeeBindingModel->getHobbyGroups())) {
                 return $this->dataReturn->errorResponse(400,"The sent data is not correct.");
             }
 
@@ -116,6 +115,7 @@ class EmployeesController
             try {
                 $lastEmployeeAddedId = $this->employeeService->addEmp($employeeBindingModel);
                 $this->employeeService->addEmployeeEducationGroups($lastEmployeeAddedId, $employeeBindingModel->getEducationGroups());
+                $this->employeeService->addEmployeeHobbyGroups($lastEmployeeAddedId, $employeeBindingModel->getHobbyGroups());
                 /**
                  * @var \Employees\Models\DB\Employee $employeeData
                  */
@@ -215,7 +215,7 @@ class EmployeesController
 
                 $this->employeeService->updEmp($empBindingModel);
                 $this->employeeService->updateEmployeeEducationGroups($empBindingModel->getId(), $empBindingModel->getEducationGroups());
-                $this->employeeService->updateEmployeeHobbyGroups($empBindingModel->getId(), $empBindingModel->getHobbiesGroups());
+                $this->employeeService->updateEmployeeHobbyGroups($empBindingModel->getId(), $empBindingModel->getHobbyGroups());
     
             } catch (\Exception $e) {
                 if (count($uploadedImages) > 0) {
