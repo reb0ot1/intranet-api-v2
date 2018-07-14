@@ -13,6 +13,8 @@ interface DataReturnInterface
 {
     public function jsonData($theData);
 
+    public function serializeObjectsToJson($objects);
+
     public function json($theData);
 
     public function tokenReturn($token);

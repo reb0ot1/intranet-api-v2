@@ -19,6 +19,8 @@ class DataReturn implements DataReturnInterface
 
     private $dataContainer;
 
+    private $jsonSerializer;
+
     public function __construct(MVCContextInterface $MVCContext)
     {
         $this->mvcContext = $MVCContext;
@@ -28,6 +30,17 @@ class DataReturn implements DataReturnInterface
     {
         print_r(json_encode(array($this->mvcContext->getHttpAction() => $theData)));
     }
+
+    public function serializeObjectsToJson($objects)
+    {
+        $container = [];
+        foreach ($objects as $object) {
+            $container[] = $object->jsonSerialize();
+        }
+
+        print_r(json_encode(array($this->mvcContext->getHttpAction()=>$container)));
+    }
+
 
     public function json($theData)
     {

@@ -86,7 +86,7 @@ class SettingsDataService implements SettingsDataServiceInterface
 
     public function hobbies()
     {
-        $query = "SELECT * FROM hobbie_groups ORDER BY id ASC" ;
+        $query = "SELECT * FROM hobby_groups ORDER BY id ASC" ;
 
         $stmt = $this->db->prepare($query);
 

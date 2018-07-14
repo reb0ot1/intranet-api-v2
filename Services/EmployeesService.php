@@ -14,6 +14,7 @@ use Employees\Models\Binding\Emp\EmpBindingModel;
 use Employees\Config\DefaultParam;
 use Employees\Models\DB\Email;
 use Employees\Models\DB\Employee;
+use Employees\Vendor\phpmailer\src\Exception;
 
 
 class EmployeesService implements EmployeesServiceInterface
@@ -27,152 +28,108 @@ class EmployeesService implements EmployeesServiceInterface
         $this->db = $db;
     }
 
-    public function getList()
-    {
-        $query = "SELECT 
-                  id, 
-                  ext_id AS extId,
-                  first_name AS firstName,
-                  last_name AS lastName,
-                  gender,
-                  sub_company_id AS company,
-                  position_id AS position,
-                  team_id AS team,
-                  start_date AS dateStart,
-                  birthday,
-                  image 
-                  FROM employees";
-
-        $stmt = $this->db->prepare($query);
-
-        $result = $stmt->fetchAll();
-
-        return $result;
-    }
-
-
     public function getListStatus($active, $id=null)
     {
         $query = "SELECT 
-                  employees.id,
-                  employees.ext_id AS extId,
-                  employees.first_name AS firstName,
-                  employees.last_name AS lastName,
-                  employees.gender,
-                  employees.sub_company_id as company,
-                  employees.position_id AS position,
-                  employees.team_id AS team,
-                  employees.start_date AS dateStart,
-                  employees.birthday,
-                  employees.image,
-                  employees.avatar, 
-                  employees.photo, 
-                  employees.education,
-                  employees.expertise,
-                  employees.skills,
-                  employees.languages,
-                  employees.hobbies,
-                  employees.pet,
-                  employees.song,
-                  employees.thought,
-                  employees.book,
-                  employees.skype,
-                  employees.book,
-                  employees.email 
-                  FROM employees 
-                  WHERE employees.active = ?";
+                  emp.id,
+                  emp.ext_id AS extId,
+                  emp.first_name AS firstName,
+                  emp.last_name AS lastName,
+                  emp.gender,
+                  emp.sub_company_id as company,
+                  emp.position_id AS position,
+                  emp.team_id AS team,
+                  emp.start_date AS dateStart,
+                  emp.birthday,
+                  CONCAT('".self::url."',emp.image) AS image,
+                  CONCAT('".self::url."',emp.avatar) AS avatar, 
+                  CONCAT('".self::url."',emp.photo) AS photo, 
+                  emp.education,
+                  emp.expertise,
+                  emp.skills,
+                  emp.languages,
+                  emp.hobbies,
+                  emp.pet,
+                  emp.song,
+                  emp.thought,
+                  emp.book,
+                  emp.skype,
+                  emp.book,
+                  emp.email, 
+                  GROUP_CONCAT(edu.id) AS educationGroups, 
+                  GROUP_CONCAT(hob.id) AS hobbyGroups 
+                  FROM employees AS emp
+                  LEFT JOIN employees_hobbies AS hobgr ON emp.id = hobgr.employee_id 
+                  LEFT JOIN hobby_groups AS hob ON hobgr.hobby_id = hob.id 
+                  LEFT JOIN employees_educations AS ee ON emp.id = ee.employee_id 
+                  LEFT JOIN education_groups AS edu ON ee.education_id = edu.id 
+						WHERE emp.active = ?";
 
         $valuesArr = [$active];
 
         if ($id !== null) {
-            $query .=" AND employees.id = ?";
+            $query .=" AND emp.id = ? GROUP BY emp.id";
             array_push($valuesArr, $id);
+        } else {
+            $query .=" GROUP BY emp.id";
         }
 
         $stmt = $this->db->prepare($query);
 
-        $status = $stmt->execute($valuesArr);
+        $stmt->execute($valuesArr);
 
-        return $stmt->fetchAll();
+        while($result = $stmt->fetchObject(Employee::class)) {
+            yield $result;
+        }
 
     }
 
     public function getEmp($id) {
         $query = "SELECT 
-                  employees.id,
-                  employees.ext_id AS extId,
-                  employees.first_name AS firstName,
-                  employees.last_name AS lastName,
-                  employees.gender,
-                  employees.sub_company_id AS company,
-                  employees.position_id AS position,
-                  employees.team_id AS team,
-                  employees.start_date AS dateStart,
-                  employees.birthday,
-                  CONCAT('".self::url."',employees.image) AS image,
-                  CONCAT('".self::url."',employees.avatar) AS avatar, 
-                  CONCAT('".self::url."',employees.photo) AS photo, 
-                  employees.education,
-                  employees.expertise,
-                  employees.skills,
-                  employees.languages,
-                  employees.hobbies,
-                  employees.pet,
-                  employees.song,
-                  employees.thought,
-                  employees.book,
-                  employees.skype,
-                  employees.book,
-                  employees.email 
-                  FROM employees 
-                  WHERE employees.id = ?";
+                  emp.id,
+                  emp.ext_id AS extId,
+                  emp.first_name AS firstName,
+                  emp.last_name AS lastName,
+                  emp.gender,
+                  emp.sub_company_id as company,
+                  emp.position_id AS position,
+                  emp.team_id AS team,
+                  emp.start_date AS dateStart,
+                  emp.birthday,
+                  CONCAT('".self::url."',emp.image) AS image,
+                  CONCAT('".self::url."',emp.avatar) AS avatar, 
+                  CONCAT('".self::url."',emp.photo) AS photo, 
+                  emp.education,
+                  emp.expertise,
+                  emp.skills,
+                  emp.languages,
+                  emp.hobbies,
+                  emp.pet,
+                  emp.song,
+                  emp.thought,
+                  emp.book,
+                  emp.skype,
+                  emp.book,
+                  emp.email, 
+                  GROUP_CONCAT(edu.id) AS educationGroups, 
+                  GROUP_CONCAT(hob.id) AS hobbyGroups 
+                  FROM employees AS emp
+                  LEFT JOIN employees_hobbies AS hobgr ON emp.id = hobgr.employee_id 
+                  LEFT JOIN hobby_groups AS hob ON hobgr.hobby_id = hob.id 
+                  LEFT JOIN employees_educations AS ee ON emp.id = ee.employee_id 
+                  LEFT JOIN education_groups AS edu ON ee.education_id = edu.id 
+                  WHERE emp.id = ? GROUP BY emp.id";
 
         $stmt = $this->db->prepare($query);
         $stmt->execute([$id]);
-        $result = $stmt->fetch();
+        $result = $stmt->fetchObject(Employee::class);
 
         return $result;
     }
 
 
 
-    public function getEmpByStrId($strId) {
-        $query = "SELECT 
-                  employees.id,
-                  employees.ext_id AS extId,
-                  employees.first_name AS firstName,
-                  employees.last_name AS lastName,
-                  employees.gender,
-                  employees.sub_company_id AS company,
-                  employees.position_id AS position,
-                  employees.team_id AS team,
-                  employees.start_date AS dateStart,
-                  employees.birthday,
-                  employees.image,
-                  employees.avatar, 
-                  employees.photo, 
-                  employees.education,
-                  employees.expertise,
-                  employees.skills,
-                  employees.languages,
-                  employees.hobbies,
-                  employees.pet,
-                  employees.song,
-                  employees.thought,
-                  employees.book,
-                  employees.skype,
-                  employees.book,
-                  employees.email 
-                  FROM employees 
-                  WHERE employees.unique_str_code = ? AND employees.active = ?";
 
-        $stmt = $this->db->prepare($query);
-
-        $stmt->execute([$strId,"yes"]);
-        $result = $stmt->fetch();
-
-        return $result;
-    }
 
     public function addEmp(EmpBindingModel $model)
     {
@@ -233,7 +190,6 @@ class EmployeesService implements EmployeesServiceInterface
 
     }
 
-//    public function updEmp(EmpBindingModel $model)
     public function updEmp(EmpBindingModel $empBindingModel)
     {
 
@@ -294,7 +250,8 @@ class EmployeesService implements EmployeesServiceInterface
 
     }
 
-    public function removeEmp($empId) : bool {
+    public function removeEmp($empId) : bool
+    {
 
         $query = "UPDATE 
                   employees 
@@ -328,5 +285,118 @@ class EmployeesService implements EmployeesServiceInterface
         return $result;
     }
 
+    public function addEmployeeEducationGroups($employeeId, $groups)
+    {
+        $this->db->beginTransaction();
+
+        try {
+            $query = "INSERT INTO
+                          employees_educations (employee_id, education_id) 
+                          VALUES (?, ?)";
+            $stmt = $this->db->prepare($query);
+            foreach ($groups as $group) {
+                  $stmt->execute([$employeeId, $group]);
+            }
+
+            $this->db->commit();
+            return true;
+
+        } catch (\PDOException  $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+
+    }
+
+    public function updateEmployeeEducationGroups($employeeId, $groups)
+    {
+        $this->db->beginTransaction();
+        $placeHolders = $this->createPlaceholders(count($groups));
+        var_dump($placeHolders);
+        $values = $groups;
+        array_push($values, $employeeId);
+
+        try {
+            $queryUpdate = "INSERT IGNORE INTO
+                          employees_educations (employee_id, education_id) 
+                          VALUES (?, ?)";
+
+            $queryRemove = "DELETE FROM employees_educations WHERE education_id NOT IN ($placeHolders) AND employee_id = ?";
+            $stmtInsert = $this->db->prepare($queryUpdate);
+            $stmtRemove = $this->db->prepare($queryRemove);
+            foreach ($groups as $group) {
+                $stmtInsert->execute([$employeeId, $group]);
+            }
+
+            $stmtRemove->execute($values);
+
+            $this->db->commit();
+            return true;
+
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
+    public function addEmployeeHobbyGroups($employeeId, $groups)
+    {
+        $this->db->beginTransaction();
+
+        try {
+            $query = "INSERT INTO
+                          employees_hobbies (employee_id, hobby_id)
+                          VALUES (?, ?)";
+            $stmt = $this->db->prepare($query);
+            foreach ($groups as $group) {
+                $stmt->execute([$employeeId, $group]);
+            }
+
+            $this->db->commit();
+            return true;
+
+        } catch (\PDOException  $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
+    public function updateEmployeeHobbyGroups($employeeId, $groups)
+    {
+        $this->db->beginTransaction();
+        $placeHolders = $this->createPlaceholders(count($groups));
+        $values = $groups;
+        array_push($values, $employeeId);
+
+        try {
+            $queryUpdate = "INSERT IGNORE INTO
+                          employees_hobbies (employee_id, hobby_id) 
+                          VALUES (?, ?)";
+
+            $queryRemove = "DELETE FROM employees_hobbies WHERE hobby_id NOT IN ($placeHolders) AND employee_id = ?";
+            $stmtInsert = $this->db->prepare($queryUpdate);
+            $stmtRemove = $this->db->prepare($queryRemove);
+            foreach ($groups as $group) {
+                $stmtInsert->execute([$employeeId, $group]);
+            }
+
+            $stmtRemove->execute($values);
+
+            $this->db->commit();
+            return true;
+
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
+
+    private function createPlaceholders($numberOfPlaceholders)
+    {
+        $placeHolders = implode(', ', array_fill(0, $numberOfPlaceholders, '?'));
+
+        return $placeHolders;
+    }
 
 }

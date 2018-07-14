@@ -16,20 +16,24 @@ use Employees\Services\EncryptionServiceInterface;
 use Employees\Services\ImageFromBinServiceInterface;
 use Employees\Config\DefaultParam;
 use Employees\Core\DataReturnInterface;
+use Employees\Services\SettingsDataServiceInterface;
 
 class EmployeesController
 {
+
     private $employeeImageFolder;
     private $employeeService;
     private $encryptionService;
     private $authenticationService;
     private $binaryImage;
     private $dataReturn;
+    private $settings;
 
     public function __construct(EmployeesServiceInterface $employeesService,
                                 EncryptionServiceInterface $encryptionService,
                                 AuthenticationServiceInterface $authenticationService,
                                 ImageFromBinServiceInterface $binService,
+                                SettingsDataServiceInterface $settings,
                                 DataReturnInterface $dataReturn)
     {
         $this->employeeService = $employeesService;
@@ -38,32 +42,14 @@ class EmployeesController
         $this->binaryImage = $binService;
         $this->dataReturn = $dataReturn;
         $this->employeeImageFolder = dirname(__DIR__)."\\".str_replace("/","\\", DefaultParam::EmployeeContainer);
+        $this->settings = $settings;
     }
-
-
-
 
     public function find($id = null)
     {
         $list =  $this->employeeService->getListStatus("yes", $id);
 
-        if (is_array($list)) {
-
-            foreach ($list as $key => $value) {
-
-                if (array_key_exists("image", $list[$key])) {
-                    $list[$key]["image"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$list[$key]["image"];
-                }
-                if (array_key_exists("avatar", $list[$key])) {
-                    $list[$key]["avatar"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$list[$key]["avatar"];
-                }
-                if (array_key_exists("photo", $list[$key])) {
-                    $list[$key]["photo"] = DefaultParam::ServerRoot.DefaultParam::EmployeeContainer.$list[$key]["photo"];
-                }
-            }
-        }
-
-        return $this->dataReturn->jsonData($list);
+        return $this->dataReturn->serializeObjectsToJson($list);
 
     }
 
@@ -84,7 +70,15 @@ class EmployeesController
     public function addemployee(EmpBindingModel $employeeBindingModel)
     {
 
-        if ($this->authenticationService->isTokenCorrect()) {
+//        if ($this->authenticationService->isTokenCorrect()) {
+        if (true) {
+            if (!$this->checkEducationGroupExists($employeeBindingModel->getEducationGroups())) {
+                return $this->dataReturn->errorResponse(400, "The sent data is not correct.");
+            }
+
+            if (!$this->checkHobbyGroupExists($employeeBindingModel->getHobbiesGroups())) {
+                return $this->dataReturn->errorResponse(400,"The sent data is not correct.");
+            }
 
             $imageName = strtolower($employeeBindingModel->getFirstName()."_".
                 $employeeBindingModel->getLastName()."_".
@@ -121,13 +115,18 @@ class EmployeesController
 
             try {
                 $lastEmployeeAddedId = $this->employeeService->addEmp($employeeBindingModel);
+                $this->employeeService->addEmployeeEducationGroups($lastEmployeeAddedId, $employeeBindingModel->getEducationGroups());
+                /**
+                 * @var \Employees\Models\DB\Employee $employeeData
+                 */
                 $employeeData = $this->employeeService->getEmp($lastEmployeeAddedId);
 
-                $email = new EmailService();
+//                $email = new EmailService();
+//
+//                $email->sendEmail($this->emailEmployeePreparation($lastEmployeeAddedId));
 
-                $email->sendEmail($this->emailEmployeePreparation($lastEmployeeAddedId));
 
-                return $this->dataReturn->jsonData($employeeData);
+                return $this->dataReturn->jsonData($employeeData->jsonSerialize());
 
 
             } catch (\Exception $e) {
@@ -151,20 +150,23 @@ class EmployeesController
     }
 
 
-    public function updateemployee($theid, EmpBindingModel $empBindingModel)
+    public function updateemployee($employeeId, EmpBindingModel $empBindingModel)
     {
+//        if ($this->authenticationService->isTokenCorrect()) {
+        if (true) {
 
-        if ($this->authenticationService->isTokenCorrect()) {
-
-            $empBindingModel->setId($theid);
-            $employee = $this->employeeService->getEmp($theid);
+            $empBindingModel->setId($employeeId);
+            /**
+             * @var \Employees\Models\DB\Employee $employee;
+             */
+            $employee = $this->employeeService->getEmp($employeeId);
             if (!$employee) {
                 return $this->dataReturn->errorResponse(400);
             }
 
-            $currentImage = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["image"]);
-            $currentImageAv = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["avatar"]);
-            $currentImagePh = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee["photo"]);
+            $currentImage = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee->getImage());
+            $currentImageAv = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee->getAvatar());
+            $currentImagePh = str_replace(DefaultParam::ServerRoot.DefaultParam::EmployeeContainer,"",$employee->getPhoto());
 
             $imageName = strtolower($empBindingModel->getFirstName()."_".
                 $empBindingModel->getLastName()."_".
@@ -177,7 +179,7 @@ class EmployeesController
             $empBindingModel->setPhoto($currentImagePh);
 
             $oldImageToRemove = [];
-
+            $uploadedImages = [];
             if ($imageForUpdate > 0) {
 
                 $uploadedImages = $this->binaryImage->createImage($imageForUpdate, $this->employeeImageFolder);
@@ -212,6 +214,8 @@ class EmployeesController
             try {
 
                 $this->employeeService->updEmp($empBindingModel);
+                $this->employeeService->updateEmployeeEducationGroups($empBindingModel->getId(), $empBindingModel->getEducationGroups());
+                $this->employeeService->updateEmployeeHobbyGroups($empBindingModel->getId(), $empBindingModel->getHobbiesGroups());
     
             } catch (\Exception $e) {
                 if (count($uploadedImages) > 0) {
@@ -273,6 +277,50 @@ class EmployeesController
         $email->setIsHTML(true);
 
         return $email;
+    }
+
+    private function checkEducationGroupExists($groups)
+    {
+        if (!is_array($groups)) {
+            return false;
+        }
+        $educationGroups = $this->settings->educations();
+        $counter = 0;
+        foreach ($educationGroups as $educationGroup) {
+
+            if (in_array($educationGroup->getId(), $groups)) {
+                $counter++;
+            }
+        }
+
+        if ($counter != count($groups))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function checkHobbyGroupExists($groups)
+    {
+        if (!is_array($groups)) {
+            return false;
+        }
+
+        $hobbyGroups = $this->settings->hobbies();
+        $counter = 0;
+        foreach ($hobbyGroups as $hobbyGroup) {
+            if (in_array($hobbyGroup->getId(), $groups)) {
+                $counter++;
+            }
+        }
+
+        if ($counter != count($groups))
+        {
+            return false;
+        }
+
+        return true;
     }
 
 

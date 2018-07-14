@@ -14,21 +14,24 @@ use Employees\Models\Binding\Emp\EmpBindingModel;
 interface EmployeesServiceInterface
 {
 
-    public function getList();
-    
     public  function getListStatus($active, $id=null);
 
     public function addEmp(EmpBindingModel $model);
 
-    public function getEmpByStrId($strId);
-
     public function getEmp($id);
 
-//    public function updEmp(EmpBindingModel $model);
     public function updEmp(EmpBindingModel $empBindingModel);
 
     public function removeEmp($empId) : bool;
 
     public function getEmailBodyForEmployeeCreation();
+
+    public function addEmployeeEducationGroups($employeeId, $groups);
+
+    public function updateEmployeeEducationGroups($employeeId, $groups);
+
+    public function addEmployeeHobbyGroups($employeeId, $groups);
+
+    public function updateEmployeeHobbyGroups($employeeId, $groups);
 
 }

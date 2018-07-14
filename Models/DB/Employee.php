@@ -9,19 +9,33 @@
 namespace Employees\Models\DB;
 
 
-class Employee
+class Employee implements \JsonSerializable
 {
-
     private $id;
-    private $extId;
     private $firstName;
     private $lastName;
+    private $gender;
+    private $company;
     private $position;
     private $team;
-    private $startDate;
+    private $dateStart;
     private $birthday;
     private $image;
-    private $active;
+    private $avatar;
+    private $photo;
+    private $education;
+    private $educationGroups;
+    private $expertise;
+    private $skills;
+    private $languages;
+    private $hobbies;
+    private $hobbyGroups;
+    private $pet;
+    private $song;
+    private $thought;
+    private $book;
+    private $skype;
+    private $email;
 
     /**
      * @return mixed
@@ -37,22 +51,6 @@ class Employee
     public function setId($id)
     {
         $this->id = $id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getExtId()
-    {
-        return $this->extId;
-    }
-
-    /**
-     * @param mixed $extId
-     */
-    public function setExtId($extId)
-    {
-        $this->extId = $extId;
     }
 
     /**
@@ -90,6 +88,38 @@ class Employee
     /**
      * @return mixed
      */
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param mixed $gender
+     */
+    public function setGender($gender)
+    {
+        $this->gender = $gender;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCompany()
+    {
+        return $this->company;
+    }
+
+    /**
+     * @param mixed $company
+     */
+    public function setCompany($company)
+    {
+        $this->company = $company;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getPosition()
     {
         return $this->position;
@@ -122,17 +152,17 @@ class Employee
     /**
      * @return mixed
      */
-    public function getStartDate()
+    public function getDateStart()
     {
-        return $this->startDate;
+        return $this->dateStart;
     }
 
     /**
-     * @param mixed $startDate
+     * @param mixed $dateStart
      */
-    public function setStartDate($startDate)
+    public function setDateStart($dateStart)
     {
-        $this->startDate = $startDate;
+        $this->dateStart = $dateStart;
     }
 
     /**
@@ -170,17 +200,269 @@ class Employee
     /**
      * @return mixed
      */
-    public function getActive()
+    public function getAvatar()
     {
-        return $this->active;
+        return $this->avatar;
     }
 
     /**
-     * @param mixed $active
+     * @param mixed $avatar
      */
-    public function setActive($active)
+    public function setAvatar($avatar)
     {
-        $this->active = $active;
+        $this->avatar = $avatar;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    /**
+     * @param mixed $photo
+     */
+    public function setPhoto($photo)
+    {
+        $this->photo = $photo;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEducation()
+    {
+        return $this->education;
+    }
+
+    /**
+     * @param mixed $education
+     */
+    public function setEducation($education)
+    {
+        $this->education = $education;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEducationGroups()
+    {
+        $groupCodes = [];
+        foreach (explode(",",$this->educationGroups) as $group)
+        {
+            if (!in_array($group, $groupCodes)) {
+                $groupCodes[] = $group;
+            }
+        }
+        return $groupCodes;
+    }
+
+    /**
+     * @param mixed $educationGroups
+     */
+    public function setEducationGroups($educationGroups)
+    {
+        $this->educationGroups = $educationGroups;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getExpertise()
+    {
+        return $this->expertise;
+    }
+
+    /**
+     * @param mixed $expertise
+     */
+    public function setExpertise($expertise)
+    {
+        $this->expertise = $expertise;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSkills()
+    {
+        return $this->skills;
+    }
+
+    /**
+     * @param mixed $skills
+     */
+    public function setSkills($skills)
+    {
+        $this->skills = $skills;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLanguages()
+    {
+        return $this->languages;
+    }
+
+    /**
+     * @param mixed $languages
+     */
+    public function setLanguages($languages)
+    {
+        $this->languages = $languages;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHobbies()
+    {
+        return $this->hobbies;
+    }
+
+    /**
+     * @param mixed $hobbies
+     */
+    public function setHobbies($hobbies)
+    {
+        $this->hobbies = $hobbies;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHobbyGroups()
+    {
+        $groupCodes = [];
+        foreach (explode(",",$this->hobbyGroups) as $group)
+        {
+            if (!in_array($group, $groupCodes)) {
+                $groupCodes[] = $group;
+            }
+        }
+
+        return $groupCodes;
+    }
+
+    /**
+     * @param mixed $hobbyGroups
+     */
+    public function setHobbyGroups($hobbyGroups)
+    {
+        $this->hobbyGroups = $hobbyGroups;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPet()
+    {
+        return $this->pet;
+    }
+
+    /**
+     * @param mixed $pet
+     */
+    public function setPet($pet)
+    {
+        $this->pet = $pet;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSong()
+    {
+        return $this->song;
+    }
+
+    /**
+     * @param mixed $song
+     */
+    public function setSong($song)
+    {
+        $this->song = $song;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getThought()
+    {
+        return $this->thought;
+    }
+
+    /**
+     * @param mixed $thought
+     */
+    public function setThought($thought)
+    {
+        $this->thought = $thought;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBook()
+    {
+        return $this->book;
+    }
+
+    /**
+     * @param mixed $book
+     */
+    public function setBook($book)
+    {
+        $this->book = $book;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSkype()
+    {
+        return $this->skype;
+    }
+
+    /**
+     * @param mixed $skype
+     */
+    public function setSkype($skype)
+    {
+        $this->skype = $skype;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param mixed $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    function jsonSerialize()
+    {
+        $getter_names = get_class_methods(get_class($this));
+        $gettable_attributes = array();
+        foreach ($getter_names as $key => $value) {
+            if(substr($value, 0, 3) === 'get') {
+                $gettable_attributes[substr($value, 3, strlen($value))] = $this->$value();
+            }
+        }
+        return $gettable_attributes;
     }
 
 

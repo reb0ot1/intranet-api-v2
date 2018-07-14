@@ -26,10 +26,12 @@ class EmpBindingModel
     private $avatar;
     private $photo;
     private $education;
+    private $educationGroups;
     private $expertise;
     private $skills;
     private $languages;
     private $hobbies;
+    private $hobbiesGroups;
     private $pet;
     private $song;
     private $thought;
@@ -236,6 +238,25 @@ class EmpBindingModel
     /**
      * @return mixed
      */
+    public function getEducationGroups()
+    {
+        $groups = array_map(create_function('$value', 'return (int)$value;'), $this->educationGroups);
+        return $groups;
+    }
+
+    /**
+     * @param mixed $educationGroups
+     */
+    public function setEducationGroups($educationGroups)
+    {
+        $this->educationGroups = $educationGroups;
+    }
+
+
+
+    /**
+     * @return mixed
+     */
     public function getExpertise()
     {
         return $this->expertise;
@@ -279,6 +300,23 @@ class EmpBindingModel
     public function setHobbies($hobbies)
     {
         $this->hobbies = $hobbies;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHobbiesGroups()
+    {
+        $groups = array_map(create_function('$value', 'return (int)$value;'), $this->hobbiesGroups);
+        return $groups;
+    }
+
+    /**
+     * @param mixed $hobbiesGroups
+     */
+    public function setHobbiesGroups($hobbiesGroups)
+    {
+        $this->hobbiesGroups = $hobbiesGroups;
     }
 
     /**
