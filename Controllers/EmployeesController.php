@@ -47,6 +47,7 @@ class EmployeesController
 
     public function find($id = null)
     {
+
         $list =  $this->employeeService->getListStatus("yes", $id);
 
         return $this->dataReturn->serializeObjectsToJson($list);
@@ -54,23 +55,23 @@ class EmployeesController
     }
 
     public function removeEmployee($id) {
-         if ($this->authenticationService->isTokenCorrect()) {
+
+        if ($this->authenticationService->isTokenCorrect()) {
 
             if ($this->employeeService->removeEmp($id)) {
-                return $this->dataReturn->jsonData(["id"=>$id]);
+                return $this->dataReturn->jsonData(["id" => $id]);
             } else {
-                return $this->dataReturn->errorResponse(400,"The employee was not removed. Please try again");
+                return $this->dataReturn->errorResponse(400, "The employee was not removed. Please try again");
             }
-         }
+        }
 
-         return $this->dataReturn->errorResponse(401);
     }
 
 
     public function addemployee(EmpBindingModel $employeeBindingModel)
     {
-//        if ($this->authenticationService->isTokenCorrect()) {
-        if (true) {
+        if ($this->authenticationService->isTokenCorrect()) {
+
             if (!$this->checkEducationGroupExists($employeeBindingModel->getEducationGroups())) {
                 return $this->dataReturn->errorResponse(400, "The sent data is not correct.");
             }
@@ -144,16 +145,10 @@ class EmployeesController
 
     }
 
-    public function getemployee($id)
-    {
-        return $this->dataReturn->jsonData($this->employeeService->getEmp($id));
-    }
-
 
     public function updateemployee($employeeId, EmpBindingModel $empBindingModel)
     {
-//        if ($this->authenticationService->isTokenCorrect()) {
-        if (true) {
+        if ($this->authenticationService->isTokenCorrect()) {
 
             $empBindingModel->setId($employeeId);
             /**
@@ -255,6 +250,18 @@ class EmployeesController
         }
 
         return $binaryImages;
+    }
+
+    private function checkForAuthentification()
+    {
+
+        if ($this->authenticationService->ifTokenExists()) {
+            if ($this->authenticationService->isTokenCorrect()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

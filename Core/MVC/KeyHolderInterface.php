@@ -12,4 +12,6 @@ namespace Employees\Core\MVC;
 interface KeyHolderInterface
 {
     public function getTokenKey();
+
+    public function ifTokenSet();
 }

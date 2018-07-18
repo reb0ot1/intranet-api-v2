@@ -28,4 +28,13 @@ class KeyHolder implements KeyHolderInterface
         return $this->tokenKey;
     }
 
+    public function ifTokenSet()
+    {
+        if (strlen($this->tokenKey) > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
 }

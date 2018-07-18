@@ -68,10 +68,10 @@ class EmployeesService implements EmployeesServiceInterface
         $valuesArr = [$active];
 
         if ($id !== null) {
-            $query .=" AND emp.id = ? GROUP BY emp.id";
+            $query .=" AND emp.id = ? GROUP BY emp.id ORDER BY first_name";
             array_push($valuesArr, $id);
         } else {
-            $query .=" GROUP BY emp.id";
+            $query .=" GROUP BY emp.id ORDER BY first_name";
         }
 
         $stmt = $this->db->prepare($query);

@@ -27,7 +27,13 @@ class AuthenticationService implements AuthenticationServiceInterface
 
     public function logout()
     {
-       $this->session->destroy();
+        $query = "UPDATE admin_tokens SET token = '', created = '', expire = '' WHERE token = ?";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute();
+
+//       $this->session->destroy();
     }
 
     public function getUserId()
@@ -65,6 +71,11 @@ class AuthenticationService implements AuthenticationServiceInterface
 
        return false;
 
+    }
+
+    public function ifTokenExists()
+    {
+        return $this->holder->ifTokenSet();
     }
 
     public function getUserInfo()

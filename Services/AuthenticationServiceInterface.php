@@ -13,4 +13,6 @@ interface AuthenticationServiceInterface
     public function isTokenCorrect() : bool;
 
     public function getUserInfo();
+
+    public function ifTokenExists();
 }
